@@ -1,11 +1,15 @@
-'use client';
-import { ProcessState, ProcessType } from '@/enums';
-import { IProcess } from '@/types';
-import { generateUniqueNumber } from '@/utils/idGenerator';
-import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+"use client";
+import { ProcessState, ProcessType } from "@/enums";
+import { IProcess } from "@/types";
+import { generateUniqueNumber } from "@/utils/idGenerator";
+import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 
-export default function CreateProcess() {
+type CreateProcessProps = {
+  setProcesses: React.Dispatch<React.SetStateAction<IProcess[]>>;
+};
+
+export default function CreateProcess({ setProcesses }: CreateProcessProps) {
   const {
     register,
     handleSubmit,
@@ -23,15 +27,17 @@ export default function CreateProcess() {
       timeCreated: Date.now(),
     };
 
+    setProcesses((prevState: IProcess[]) => [...prevState, processData]);
     console.log(processData);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div>
         <input
           type="text"
           placeholder="Proridade"
-          {...register('priority', { required: true })}
+          {...register("priority", { required: true })}
           className="input input-bordered input-info w-full max-w-xs"
         />
         {errors.priority && <span>This field is required</span>}
@@ -41,7 +47,7 @@ export default function CreateProcess() {
         <input
           type="text"
           placeholder="Type here"
-          {...register('color', { required: true })}
+          {...register("color", { required: true })}
           className="input input-bordered input-info w-full max-w-xs"
         />
         {errors.color && <span>This field is required</span>}
@@ -50,11 +56,10 @@ export default function CreateProcess() {
       <div>
         <select
           className="select select-info w-full max-w-xs "
-          {...register('type', { required: true })}
+          {...register("type", { required: true })}
+          defaultValue={"Selecione o tipo"}
         >
-          <option disabled selected>
-            Selecione o tipo
-          </option>
+          <option disabled>Selecione o tipo</option>
           <option>{ProcessType.CpuBound}</option>
           <option>{ProcessType.IOBound}</option>
         </select>
