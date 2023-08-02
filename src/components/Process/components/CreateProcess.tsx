@@ -1,5 +1,5 @@
 'use client';
-import { ProcessState, ProcessType } from '@/enums';
+import { ProcessState, ProcessType, TailwindColors } from '@/enums';
 import { IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
 import React from 'react';
@@ -26,6 +26,7 @@ export default function CreateProcess({ setProcesses }: CreateProcessProps) {
       color: data.color,
       type: data.type,
       state: ProcessState.Waiting,
+      cpuTime: 0,
       timeCreated: Date.now(),
     };
 
@@ -55,12 +56,17 @@ export default function CreateProcess({ setProcesses }: CreateProcessProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <input
-            type="text"
-            placeholder="Cor"
+          <select
+            className="select select-info w-full max-w-xs"
             {...register('color', { required: true })}
-            className="input input-bordered input-info w-full max-w-xs"
-          />
+          >
+            <option disabled>Selecione a cor</option>
+            {Object.keys(TailwindColors).map((color, index) => (
+              <option key={index} value={TailwindColors[color]}>
+                {color}
+              </option>
+            ))}
+          </select>
           {errors.color && (
             <span className="ml-2 text-red-500">Campo obrigatório</span>
           )}

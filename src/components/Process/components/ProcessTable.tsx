@@ -15,16 +15,31 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
             <th>PID</th>
             <th>Prioridade</th>
             <th>Estado</th>
-            <th>Tipo</th>
+            <th>Tempo de cpu</th>
           </tr>
         </thead>
         <tbody>
           {processes.map((process) => (
             <tr key={process.id}>
-              <th>{process.id}</th>
+              <th>
+                <div>
+                  <div className="flex items-center gap-1">
+                    <span
+                      style={{ backgroundColor: process.color }}
+                      className={`rounded-full h-2 w-2 inline-block`}
+                    />
+                    <span> {process.id}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs">
+                      {process.type}
+                    </span>
+                  </div>
+                </div>
+              </th>
               <td>{process.priority}</td>
               <td>{process.state}</td>
-              <td>{process.type}</td>
+              <td>{process.cpuTime}</td>
             </tr>
           ))}
         </tbody>
