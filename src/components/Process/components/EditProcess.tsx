@@ -1,10 +1,5 @@
 'use client';
-import {
-  EscalationAlgorithm,
-  ProcessState,
-  ProcessType,
-  TailwindColors,
-} from '@/enums';
+import { ProcessState, ProcessType, TailwindColors } from '@/enums';
 import { IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
 import React from 'react';
@@ -13,13 +8,11 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 type CreateProcessProps = {
   setProcesses: React.Dispatch<React.SetStateAction<IProcess[]>>;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  actualAlgorithm?: EscalationAlgorithm;
 };
 
 export default function CreateProcess({
   setProcesses,
   setShowModal,
-  actualAlgorithm,
 }: CreateProcessProps) {
   const {
     register,
@@ -34,14 +27,12 @@ export default function CreateProcess({
       priority: data.priority,
       color: data.color,
       type: data.type,
-      runningTime: data.runningTime,
       state: ProcessState.Waiting,
       cpuTime: 0,
       timeCreated: Date.now(),
     };
 
     setProcesses((prevState: IProcess[]) => [...prevState, processData]);
-
     reset();
     setShowModal(false);
   };
@@ -51,16 +42,14 @@ export default function CreateProcess({
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-center gap-4 max-w-[500px] p-4"
     >
-      <h1 className="text-lg text-green-600 font-semibold">
-        Criar novo processo
-      </h1>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-lg text-green-600 font-semibold">
+          Criar novo processo
+        </h1>
         <div className="flex flex-col gap-2">
           <input
-            type="number"
+            type="text"
             placeholder="Proridade"
-            min={1}
-            max={15}
             {...register('priority', { required: true })}
             className="input input-bordered input-info w-full max-w-xs"
           />
@@ -68,22 +57,6 @@ export default function CreateProcess({
             <span className="ml-2  text-red-500">Campo obrigatório</span>
           )}
         </div>
-
-        {actualAlgorithm !== EscalationAlgorithm.RR && (
-          <div className="flex flex-col gap-2">
-            <input
-              type="number"
-              min={1}
-              max={50}
-              placeholder="Tempo de execução"
-              {...register('runningTime', { required: true })}
-              className="input input-bordered input-info w-full max-w-xs"
-            />
-            {errors.runningTime && (
-              <span className="ml-2  text-red-500">Campo obrigatório</span>
-            )}
-          </div>
-        )}
 
         <div className="flex flex-col gap-2">
           <select

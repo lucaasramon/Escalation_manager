@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { EscalationAlgorithm } from '@/enums';
 
@@ -14,19 +14,18 @@ export default function SelectEscalationAlgorithm({
   const {
     register,
     handleSubmit,
-    reset,
+    watch,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
+  const selectedAlgorithm = watch('algorithm', '');
+
+  useEffect(() => {
+    setActualAlgorithm(selectedAlgorithm);
+  }, [selectedAlgorithm, setActualAlgorithm]);
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-center gap-4 max-w-[500px] p-4"
-    >
+    <form className="flex flex-col items-center gap-4 max-w-[500px] p-4">
       <div className="flex flex-col gap-2">
         <select
           className="select select-info w-full max-w-xs"

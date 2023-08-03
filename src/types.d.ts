@@ -7,5 +7,6 @@ export interface IProcess {
   type: ProcessType;
   state?: ProcessState;
   cpuTime?: number;
-  timeCreated?: number;
+  runningTime: number;
+  timeCreated?: date;
 }

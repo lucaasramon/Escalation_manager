@@ -12,6 +12,8 @@ export enum ProcessState {
 export enum EscalationAlgorithm {
   FIFO = 'First In First Out',
   SJF = 'Shortest Job First',
+  Priority = 'Priority',
+  RR = 'RoundRobin',
 }
 
 export enum TailwindColors {

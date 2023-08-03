@@ -14,6 +14,7 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
           <tr>
             <th>PID</th>
             <th>Prioridade</th>
+            <th>Tempo de execução</th>
             <th>Estado</th>
             <th>Tempo de cpu</th>
           </tr>
@@ -38,8 +39,9 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
                 </div>
               </th>
               <td>{process.priority}</td>
+              <td>{process.runningTime} seg(s)</td>
               <td>{process.state}</td>
-              <td>{process.cpuTime}</td>
+              <td>{process.cpuTime} seg(s)</td>
             </tr>
           ))}
         </tbody>
