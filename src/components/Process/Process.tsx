@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CreateProcess from './components/CreateProcess';
 import { IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
-import { Plus, Cpu, Play } from '@phosphor-icons/react';
+import { Plus, Cpu, Play, Info } from '@phosphor-icons/react';
 import { EscalationAlgorithm } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
 import { alternateQueuedProcessesHelper } from '@/helper/AlternateQueuedProcesses';
@@ -30,42 +30,47 @@ export default function Process() {
   >(undefined);
   const [quantum, setQuantum] = useState<number | undefined>(5);
   const [cycles, setCycles] = useState<cycle[]>([]);
+  const [showStatistics, setShowStatistics] = useState<boolean>(false);
 
   // localStorage.setItem('processes', JSON.stringify(processes));
-
-  console.log('runningProcess: ', runningProcess);
-
-  console.log('cycles: ', cycles);
-  // console.log('queuedProcesses: ', queuedProcesses);
 
   //useEffect para atualizar as informações dos processos
   useEffect(() => {
     const updateProcessesInfo = () => {
-      setRunningProcess((prevRunningProcess) => {
-        if (!prevRunningProcess) return null;
+      setCycles((prevCycles) => {
+        return prevCycles.map((cycle) => {
+          if (cycle.cycleProcesses) {
+            const updatedProcesses = cycle.cycleProcesses.map((process) => {
+              if (process.id === runningProcess?.id) {
+                return {
+                  ...process,
+                  cpuUsageTime: process.cpuUsageTime + 1,
+                };
+              } else {
+                return {
+                  ...process,
+                  waitingTime: process.waitingTime + 1,
+                };
+              }
+            });
 
-        return {
-          ...prevRunningProcess,
-          cpuUsageTime: prevRunningProcess.cpuUsageTime + 1,
-        };
+            return {
+              ...cycle,
+              cycleProcesses: updatedProcesses,
+            };
+          }
+          return cycle;
+        });
       });
-
-      setQueuedProcesses((prevQueuedProcesses) =>
-        prevQueuedProcesses.map((process) => ({
-          ...process,
-          waitingTime:
-            process.id === runningProcess?.id
-              ? process.waitingTime
-              : process.waitingTime + 1,
-        })),
-      );
     };
 
     if (runningProcess) {
       const intervalId = setInterval(updateProcessesInfo, 1000);
-      return () => clearInterval(intervalId);
+      return () => {
+        clearInterval(intervalId);
+      };
     }
-  }, [runningProcess]);
+  }, [runningProcess, cycles]);
 
   //useEffect para filtrar os processos baseado no algoritmo selecionado
   useEffect(() => {
@@ -92,7 +97,7 @@ export default function Process() {
     }
 
     const newCycle: cycle = {
-      id: cycles.length + 1,
+      id: cycles?.length + 1,
       algorithm: actualAlgorithm!,
       cycleProcesses: queuedProcesses,
       startTime: new Date(),
@@ -123,6 +128,18 @@ export default function Process() {
 
           {actualAlgorithm === EscalationAlgorithm.RR && (
             <Quantum setQuantum={setQuantum} quantum={quantum} />
+          )}
+
+          {cycles && (
+            <div>
+              <button
+                onClick={() => setShowStatistics(!showStatistics)}
+                className="btn btn-primary"
+                disabled={!cycles.length || !!runningProcess}
+              >
+                <Info size={32} />
+              </button>
+            </div>
           )}
         </div>
 
@@ -164,6 +181,43 @@ export default function Process() {
               setShowModal={setShowModal}
               actualAlgorithm={actualAlgorithm}
             />
+          </div>
+        </dialog>
+      )}
+
+      {showStatistics && (
+        <dialog id="my_modal_4" className="modal modal-open">
+          <div className="modal-box">
+            <button
+              onClick={() => setShowStatistics(!showStatistics)}
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            >
+              ✕
+            </button>
+            <h1>Estatisticas</h1>
+            <div className="p-4">
+              {cycles.map((cycle) => (
+                <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
+                  <h1 className="text-lg font-semibold mb-2">
+                    {cycle.algorithm}
+                  </h1>
+                  {cycle.cycleProcesses?.map((process) => (
+                    <div key={process.id} className="border-t pt-2">
+                      <ul className="list-none p-0">
+                        <li className="text-sm">PID: {process.id}</li>
+                        <li className="text-sm">Estado: {process.state}</li>
+                        <li className="text-sm">
+                          Utilização de CPU: {process.cpuUsageTime} seg(s)
+                        </li>
+                        <li className="text-sm">
+                          Tempo em espera: {process.waitingTime} seg(s)
+                        </li>
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </dialog>
       )}
