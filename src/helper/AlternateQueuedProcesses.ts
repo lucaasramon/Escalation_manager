@@ -15,19 +15,19 @@ export const alternateQueuedProcessesHelper = async (
 
     await new Promise<void>((resolve) => {
       setRunningProcess(null);
+      const interval = index > 0 ? 2000 : 500;
       setTimeout(() => {
         setRunningProcess(process);
         resolve();
-      }, 2500);
+      }, interval);
     });
 
     await new Promise<void>((resolve) => {
-      setTimeout(
-        () => {
-          resolve();
-        },
-        quantum ? quantum * 1000 : process?.runningTime * 1000,
-      );
+      const interval = quantum ? quantum * 1000 : process?.runningTime * 1000;
+      console.log('INTERVAL: ', interval);
+      setTimeout(() => {
+        resolve();
+      }, interval);
     });
     await updateRunningProcess(index + 1);
   };

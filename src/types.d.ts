@@ -1,12 +1,13 @@
 import { ProcessState, ProcessType } from './enums';
 
 export interface IProcess {
-  id?: number;
+  id: number;
   priority: number;
   color: string;
   type: ProcessType;
-  state?: ProcessState;
-  cpuTime?: number;
+  state: ProcessState;
+  cpuUsageTime: number;
+  waitingTime: number;
   runningTime: number;
-  timeCreated?: date;
+  createdAt: date;
 }

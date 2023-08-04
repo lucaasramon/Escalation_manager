@@ -1,14 +1,14 @@
 import React from 'react';
 
-type ProcessSettingsProps = {
+type QuantumProps = {
   setQuantum: React.Dispatch<React.SetStateAction<number | undefined>>;
   quantum: number | undefined;
 };
 
-export default function ProcessSettings({
+export default function Quantum({
   setQuantum,
   quantum,
-}: ProcessSettingsProps) {
+}: QuantumProps) {
   const handleChangeQuantum = (value: string) => {
     const handledValue = Number(value);
     setQuantum(handledValue);

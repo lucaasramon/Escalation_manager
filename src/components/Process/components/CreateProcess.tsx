@@ -3,7 +3,7 @@ import {
   EscalationAlgorithm,
   ProcessState,
   ProcessType,
-  TailwindColors,
+  colors,
 } from '@/enums';
 import { IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
@@ -36,8 +36,9 @@ export default function CreateProcess({
       type: data.type,
       runningTime: data.runningTime,
       state: ProcessState.Waiting,
-      cpuTime: 0,
-      timeCreated: Date.now(),
+      cpuUsageTime: 0,
+      waitingTime: 0,
+      createdAt: Date.now(),
     };
 
     setProcesses((prevState: IProcess[]) => [...prevState, processData]);
@@ -91,8 +92,8 @@ export default function CreateProcess({
             {...register('color', { required: true })}
           >
             <option disabled>Selecione a cor</option>
-            {Object.keys(TailwindColors).map((color, index) => (
-              <option key={index} value={TailwindColors[color]}>
+            {Object.keys(colors).map((color, index) => (
+              <option key={index} value={colors[color]}>
                 {color}
               </option>
             ))}

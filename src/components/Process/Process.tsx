@@ -4,13 +4,21 @@ import CreateProcess from './components/CreateProcess';
 import { IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
 import { Plus, Cpu, Play } from '@phosphor-icons/react';
-import { EscalationAlgorithm, ProcessType } from '@/enums';
+import { EscalationAlgorithm } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
-import ProcessSettings from './components/ProcessSettings';
 import { alternateQueuedProcessesHelper } from '@/helper/AlternateQueuedProcesses';
 import { sortByFifo } from '@/helper/SortProcessses/sortByFifo';
 import { sortBySjf } from '@/helper/SortProcessses/sortBySjf';
 import { sortByPriority } from '@/helper/SortProcessses/sortByPriority';
+import Quantum from './components/Quantum';
+
+type cycle = {
+  id: number;
+  startTime: Date;
+  endTime?: Date;
+  algorithm: EscalationAlgorithm;
+  cycleProcesses: IProcess[] | undefined;
+};
 
 export default function Process() {
   const [processes, setProcesses] = useState<IProcess[]>([]);
@@ -21,23 +29,43 @@ export default function Process() {
     EscalationAlgorithm | undefined
   >(undefined);
   const [quantum, setQuantum] = useState<number | undefined>(5);
+  const [cycles, setCycles] = useState<cycle[]>([]);
 
-  console.log('runningProcess : ', runningProcess);
-  console.log('queuedProcesses: ', queuedProcesses);
+  // localStorage.setItem('processes', JSON.stringify(processes));
 
-  localStorage.setItem('processes', JSON.stringify(processes));
+  console.log('runningProcess: ', runningProcess);
 
-  // const handleUpdateRunningProcess = () => {
-  //   setProcesses((prevState) =>
-  //     prevState.map((process) => {
-  //       if (process.id === runningProcess?.id) {
-  //         process.state = ProcessState.Running;
-  //       }
-  //       console.log(process);
-  //       return process;
-  //     }),
-  //   );
-  // };
+  console.log('cycles: ', cycles);
+  // console.log('queuedProcesses: ', queuedProcesses);
+
+  //useEffect para atualizar as informações dos processos
+  useEffect(() => {
+    const updateProcessesInfo = () => {
+      setRunningProcess((prevRunningProcess) => {
+        if (!prevRunningProcess) return null;
+
+        return {
+          ...prevRunningProcess,
+          cpuUsageTime: prevRunningProcess.cpuUsageTime + 1,
+        };
+      });
+
+      setQueuedProcesses((prevQueuedProcesses) =>
+        prevQueuedProcesses.map((process) => ({
+          ...process,
+          waitingTime:
+            process.id === runningProcess?.id
+              ? process.waitingTime
+              : process.waitingTime + 1,
+        })),
+      );
+    };
+
+    if (runningProcess) {
+      const intervalId = setInterval(updateProcessesInfo, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [runningProcess]);
 
   //useEffect para filtrar os processos baseado no algoritmo selecionado
   useEffect(() => {
@@ -52,6 +80,26 @@ export default function Process() {
     }
   }, [actualAlgorithm, processes]);
 
+  const handlePlay = () => {
+    if (actualAlgorithm === EscalationAlgorithm.RR) {
+      alternateQueuedProcessesHelper(
+        queuedProcesses,
+        setRunningProcess,
+        quantum,
+      );
+    } else {
+      alternateQueuedProcessesHelper(queuedProcesses, setRunningProcess);
+    }
+
+    const newCycle: cycle = {
+      id: cycles.length + 1,
+      algorithm: actualAlgorithm!,
+      cycleProcesses: queuedProcesses,
+      startTime: new Date(),
+    };
+    setCycles((prevState) => [...prevState, newCycle]);
+  };
+
   return (
     <div>
       <div className="flex gap-2 items-start w-full justify-between ">
@@ -64,14 +112,9 @@ export default function Process() {
           </button>
 
           <button
-            onClick={() =>
-              alternateQueuedProcessesHelper(
-                queuedProcesses,
-                setRunningProcess,
-                quantum,
-              )
-            }
+            onClick={handlePlay}
             className="btn btn-primary"
+            disabled={!processes.length || !!runningProcess}
           >
             <Play size={32} />
           </button>
@@ -79,7 +122,7 @@ export default function Process() {
           <SelectEscalationAlgorithm setActualAlgorithm={setActualAlgorithm} />
 
           {actualAlgorithm === EscalationAlgorithm.RR && (
-            <ProcessSettings setQuantum={setQuantum} quantum={quantum} />
+            <Quantum setQuantum={setQuantum} quantum={quantum} />
           )}
         </div>
 
