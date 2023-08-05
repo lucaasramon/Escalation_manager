@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import CreateProcess from './components/CreateProcess';
-import { IProcess } from '@/types';
+import { ICycle, IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
 import { Plus, Cpu, Play, Info } from '@phosphor-icons/react';
 import { EscalationAlgorithm } from '@/enums';
@@ -11,66 +11,65 @@ import { sortByFifo } from '@/helper/SortProcessses/sortByFifo';
 import { sortBySjf } from '@/helper/SortProcessses/sortBySjf';
 import { sortByPriority } from '@/helper/SortProcessses/sortByPriority';
 import Quantum from './components/Quantum';
-
-type cycle = {
-  id: number;
-  startTime: Date;
-  endTime?: Date;
-  algorithm: EscalationAlgorithm;
-  cycleProcesses: IProcess[] | undefined;
-};
+import CyclesStatistics from './components/Cycles/CyclesStatistics';
 
 export default function Process() {
   const [processes, setProcesses] = useState<IProcess[]>([]);
   const [queuedProcesses, setQueuedProcesses] = useState<IProcess[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [runningProcess, setRunningProcess] = useState<IProcess | null>(null);
+  const [activeProcess, setActiveProcess] = useState<IProcess | null>(null);
   const [actualAlgorithm, setActualAlgorithm] = useState<
     EscalationAlgorithm | undefined
   >(undefined);
   const [quantum, setQuantum] = useState<number | undefined>(5);
-  const [cycles, setCycles] = useState<cycle[]>([]);
+  const [cycles, setCycles] = useState<ICycle[]>([]);
+  const [activeCycle, setActiveCycle] = useState<ICycle | undefined>(undefined);
+
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
 
   // localStorage.setItem('processes', JSON.stringify(processes));
 
+  console.log('cycles: ', cycles);
+
   //useEffect para atualizar as informações dos processos
   useEffect(() => {
-    const updateProcessesInfo = () => {
+    const updateActiveCycle = () => {
       setCycles((prevCycles) => {
         return prevCycles.map((cycle) => {
-          if (cycle.cycleProcesses) {
-            const updatedProcesses = cycle.cycleProcesses.map((process) => {
-              if (process.id === runningProcess?.id) {
-                return {
-                  ...process,
-                  cpuUsageTime: process.cpuUsageTime + 1,
-                };
-              } else {
-                return {
-                  ...process,
-                  waitingTime: process.waitingTime + 1,
-                };
-              }
-            });
+          if (cycle.id === activeCycle?.id) {
+            if (cycle.cycleProcesses) {
+              const updatedProcesses = cycle.cycleProcesses.map((process) => {
+                if (process.id === activeProcess?.id) {
+                  return {
+                    ...process,
+                    cpuUsageTime: process.cpuUsageTime + 1,
+                  };
+                } else {
+                  return {
+                    ...process,
+                    waitingTime: process.waitingTime + 1,
+                  };
+                }
+              });
 
-            return {
-              ...cycle,
-              cycleProcesses: updatedProcesses,
-            };
+              return {
+                ...cycle,
+                cycleProcesses: updatedProcesses,
+              };
+            }
           }
           return cycle;
         });
       });
     };
 
-    if (runningProcess) {
-      const intervalId = setInterval(updateProcessesInfo, 1000);
+    if (activeProcess) {
+      const intervalId = setInterval(updateActiveCycle, 1000);
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [runningProcess, cycles]);
+  }, [activeProcess, activeCycle]);
 
   //useEffect para filtrar os processos baseado no algoritmo selecionado
   useEffect(() => {
@@ -86,23 +85,24 @@ export default function Process() {
   }, [actualAlgorithm, processes]);
 
   const handlePlay = () => {
-    if (actualAlgorithm === EscalationAlgorithm.RR) {
-      alternateQueuedProcessesHelper(
-        queuedProcesses,
-        setRunningProcess,
-        quantum,
-      );
-    } else {
-      alternateQueuedProcessesHelper(queuedProcesses, setRunningProcess);
-    }
-
-    const newCycle: cycle = {
+    const newCycle: ICycle = {
       id: cycles?.length + 1,
       algorithm: actualAlgorithm!,
       cycleProcesses: queuedProcesses,
       startTime: new Date(),
     };
+    setActiveCycle(newCycle);
     setCycles((prevState) => [...prevState, newCycle]);
+
+    if (actualAlgorithm === EscalationAlgorithm.RR) {
+      alternateQueuedProcessesHelper(
+        queuedProcesses,
+        setActiveProcess,
+        quantum,
+      );
+    } else {
+      alternateQueuedProcessesHelper(queuedProcesses, setActiveProcess);
+    }
   };
 
   return (
@@ -119,7 +119,7 @@ export default function Process() {
           <button
             onClick={handlePlay}
             className="btn btn-primary"
-            disabled={!processes.length || !!runningProcess}
+            disabled={!processes.length || !!activeProcess}
           >
             <Play size={32} />
           </button>
@@ -135,7 +135,7 @@ export default function Process() {
               <button
                 onClick={() => setShowStatistics(!showStatistics)}
                 className="btn btn-primary"
-                disabled={!cycles.length || !!runningProcess}
+                disabled={!cycles.length || !!activeProcess}
               >
                 <Info size={32} />
               </button>
@@ -146,10 +146,10 @@ export default function Process() {
         <div className="flex items-center flex-col gap-2 border-2 p-4 shadow-lg rounded-lg h-[200px] w-[200px]">
           <Cpu
             size={40}
-            className={`${runningProcess ? 'animate-ping text-red-500' : ''}`}
+            className={`${activeProcess ? 'animate-ping text-red-500' : ''}`}
           />
 
-          {runningProcess && (
+          {activeProcess && (
             <div className="flex flex-col p-4 items-center">
               <div className="flex p-2 gap-2 items-center">
                 <h2 className="text-green-500 italic">Executando...</h2>
@@ -157,10 +157,10 @@ export default function Process() {
 
               <div className="flex gap-1 items-center">
                 <span
-                  style={{ backgroundColor: runningProcess?.color }}
+                  style={{ backgroundColor: activeProcess?.color }}
                   className={`rounded-full h-2 w-2 inline-block`}
                 />
-                <span>{runningProcess?.id}</span>
+                <span>{activeProcess?.id}</span>
               </div>
             </div>
           )}
@@ -168,58 +168,20 @@ export default function Process() {
       </div>
 
       {showModal && (
-        <dialog id="my_modal_3" className="modal modal-open">
-          <div className="modal-box">
-            <button
-              onClick={() => setShowModal(!showModal)}
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-            >
-              ✕
-            </button>
-            <CreateProcess
-              setProcesses={setProcesses}
-              setShowModal={setShowModal}
-              actualAlgorithm={actualAlgorithm}
-            />
-          </div>
-        </dialog>
+        <CreateProcess
+          setProcesses={setProcesses}
+          setShowModal={setShowModal}
+          actualAlgorithm={actualAlgorithm}
+          showModal={showModal}
+        />
       )}
 
       {showStatistics && (
-        <dialog id="my_modal_4" className="modal modal-open">
-          <div className="modal-box">
-            <button
-              onClick={() => setShowStatistics(!showStatistics)}
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-            >
-              ✕
-            </button>
-            <h1>Estatisticas</h1>
-            <div className="p-4">
-              {cycles.map((cycle) => (
-                <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
-                  <h1 className="text-lg font-semibold mb-2">
-                    {cycle.algorithm}
-                  </h1>
-                  {cycle.cycleProcesses?.map((process) => (
-                    <div key={process.id} className="border-t pt-2">
-                      <ul className="list-none p-0">
-                        <li className="text-sm">PID: {process.id}</li>
-                        <li className="text-sm">Estado: {process.state}</li>
-                        <li className="text-sm">
-                          Utilização de CPU: {process.cpuUsageTime} seg(s)
-                        </li>
-                        <li className="text-sm">
-                          Tempo em espera: {process.waitingTime} seg(s)
-                        </li>
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </dialog>
+        <CyclesStatistics
+          cycles={cycles}
+          setShowStatistics={setShowStatistics}
+          showStatistics={showStatistics}
+        />
       )}
 
       <ProcessTable processes={processes} />

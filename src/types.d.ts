@@ -11,3 +11,11 @@ export interface IProcess {
   runningTime: number;
   createdAt: date;
 }
+
+export interface ICycle {
+  id: number;
+  startTime: Date;
+  endTime?: Date;
+  algorithm: EscalationAlgorithm;
+  cycleProcesses: IProcess[];
+}

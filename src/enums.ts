@@ -13,7 +13,7 @@ export enum EscalationAlgorithm {
   FIFO = 'First In First Out',
   SJF = 'Shortest Job First',
   Priority = 'Priority',
-  RR = 'RoundRobin',
+  RR = 'Round Robin',
 }
 
 export enum colors {
