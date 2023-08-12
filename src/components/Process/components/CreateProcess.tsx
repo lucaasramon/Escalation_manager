@@ -103,8 +103,11 @@ export default function CreateProcess({
                 {...register('color', { required: true })}
               >
                 <option disabled>Selecione a cor</option>
-                {Object.keys(colors).map((color, index) => (
-                  <option key={index} value={colors[color]}>
+                {Object.keys(colors).map((color: string, index) => (
+                  <option
+                    key={index}
+                    value={colors[color as keyof typeof colors]}
+                  >
                     {color}
                   </option>
                 ))}

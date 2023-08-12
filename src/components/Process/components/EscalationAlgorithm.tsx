@@ -33,7 +33,14 @@ export default function SelectEscalationAlgorithm({
         >
           <option disabled>Selecione a algoritmo</option>
           {Object.keys(EscalationAlgorithm).map((algorithm, index) => (
-            <option key={index} value={EscalationAlgorithm[algorithm]}>
+            <option
+              key={index}
+              value={
+                EscalationAlgorithm[
+                  algorithm as keyof typeof EscalationAlgorithm
+                ]
+              }
+            >
               {algorithm}
             </option>
           ))}
