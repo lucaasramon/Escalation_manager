@@ -6,10 +6,10 @@ export interface IProcess {
   color: string;
   type: ProcessType;
   state: ProcessState;
-  cpuUsageTime: number;
-  waitingTime: number;
-  runningTime: number;
-  createdAt: date;
+  cpuUsageTime?: number;
+  waitingTime?: number;
+  runningTime?: number;
+  createdAt: Date;
 }
 
 export interface ICycle {

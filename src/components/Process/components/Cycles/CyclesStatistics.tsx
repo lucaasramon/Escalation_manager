@@ -29,7 +29,14 @@ export default function CyclesStatistics({
               {cycle.cycleProcesses?.map((process) => (
                 <div key={process.id} className="border-t pt-2">
                   <ul className="list-none p-0">
-                    <li className="text-sm">PID: {process.id}</li>
+                    <li className="text-sm">
+                      PID:{' '}
+                      <span
+                        style={{ backgroundColor: process.color }}
+                        className={`rounded-full h-2 w-2 inline-block`}
+                      />{' '}
+                      {process.id}
+                    </li>
                     <li className="text-sm">Estado: {process.state}</li>
                     <li className="text-sm">
                       Utilização de CPU: {process.cpuUsageTime} seg(s)

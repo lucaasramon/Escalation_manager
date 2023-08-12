@@ -30,7 +30,7 @@ export default function CreateProcess({
     formState: { errors },
   } = useForm();
 
-  const onSubmit: SubmitHandler<IProcess> = (data) => {
+  const onSubmit: any = (data: IProcess) => {
     const processData: IProcess = {
       id: generateUniqueNumber(1000, 9999),
       priority: data.priority,
@@ -40,7 +40,7 @@ export default function CreateProcess({
       state: ProcessState.Waiting,
       cpuUsageTime: 0,
       waitingTime: 0,
-      createdAt: Date.now(),
+      createdAt: new Date(),
     };
 
     setProcesses((prevState: IProcess[]) => [...prevState, processData]);
