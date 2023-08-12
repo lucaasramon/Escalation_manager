@@ -6,9 +6,9 @@ export interface IProcess {
   color: string;
   type: ProcessType;
   state: ProcessState;
-  cpuUsageTime?: number;
-  waitingTime?: number;
-  runningTime?: number;
+  cpuUsageTime: number;
+  waitingTime: number;
+  runningTime: number;
   createdAt: Date;
 }
 

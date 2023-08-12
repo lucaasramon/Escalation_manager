@@ -42,12 +42,12 @@ export default function Process() {
                 if (process.id === activeProcess?.id) {
                   return {
                     ...process,
-                    cpuUsageTime: process.cpuUsageTime + 1,
+                    cpuUsageTime: process?.cpuUsageTime! + 1,
                   };
                 } else {
                   return {
                     ...process,
-                    waitingTime: process.waitingTime + 1,
+                    waitingTime: process?.waitingTime! + 1,
                   };
                 }
               });
