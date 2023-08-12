@@ -6,7 +6,7 @@ export const sortByFifo = (
 ) => {
   const tempProcesses = [...processes];
   const sortedProcesses = tempProcesses.sort(
-    (objA, objB) => Number(objA.timeCreated) - Number(objB.timeCreated),
+    (objA, objB) => Number(objA.createdAt) - Number(objB.createdAt),
   );
   setQueuedProcesses(sortedProcesses);
 };
