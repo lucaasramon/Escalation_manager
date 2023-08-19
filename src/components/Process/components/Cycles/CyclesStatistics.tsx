@@ -22,12 +22,12 @@ export default function CyclesStatistics({
           ✕
         </button>
         <h1>Estatisticas</h1>
-        <div className="p-4">
+        <div className="p-4 text-white">
           {cycles.map((cycle) => (
             <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
               <h1 className="text-lg font-semibold mb-2">{cycle.algorithm}</h1>
               {cycle.cycleProcesses?.map((process) => (
-                <div key={process.id} className="border-t pt-2">
+                <div key={process.id} className="border-b p-2">
                   <ul className="list-none p-0">
                     <li className="text-sm">
                       PID:{' '}

@@ -8,7 +8,7 @@ type ProcessTableProps = {
 export default function ProcessTable({ processes }: ProcessTableProps) {
   return (
     <div className="overflow-x-auto">
-      <h1 className="text-center mb-4 text-xl">Processos</h1>
+      <h1 className="text-center mb-4 text-xl">Tabela de processos</h1>
       {processes.length ? (
         <table className="table table-zebra">
           <thead>

@@ -25,7 +25,7 @@ export default function SelectEscalationAlgorithm({
   }, [selectedAlgorithm, setActualAlgorithm]);
 
   return (
-    <form className="flex flex-col items-center gap-4 max-w-[500px] p-4">
+    <form className="flex flex-col items-center gap-4 max-w-[500px]">
       <div className="flex flex-col gap-2">
         <select
           className="select select-info w-full max-w-xs"

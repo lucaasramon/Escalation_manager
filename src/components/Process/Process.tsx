@@ -107,64 +107,71 @@ export default function Process() {
 
   return (
     <div>
-      <div className="flex gap-2 items-start w-full justify-between ">
-        <div className="flex gap-2 items-center justify-center">
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowModal(!showModal)}
-          >
-            Processo <Plus size={32} />
-          </button>
+      <div className="flex flex-col gap-4 items-center p-2">
+          <div className='flex items-center justify-between w-full'>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowModal(!showModal)}
+            >
+              Processo <Plus size={32} />
+            </button>
 
-          <button
-            onClick={handlePlay}
-            className="btn btn-primary"
-            disabled={!processes.length || !!activeProcess}
-          >
-            <Play size={32} />
-          </button>
+            <button
+              onClick={handlePlay}
+              className="btn btn-primary"
+              disabled={!processes.length || !!activeProcess}
+            >
+              <Play size={32} />
+            </button>
+          </div>
+          
 
-          <SelectEscalationAlgorithm setActualAlgorithm={setActualAlgorithm} />
+          <div className="flex gap-2 justify-between items-center w-full">
+            <SelectEscalationAlgorithm setActualAlgorithm={setActualAlgorithm} />
 
-          {actualAlgorithm === EscalationAlgorithm.RR && (
-            <Quantum setQuantum={setQuantum} quantum={quantum} />
-          )}
+            {actualAlgorithm === EscalationAlgorithm.RR && (
+              <Quantum setQuantum={setQuantum} quantum={quantum} />
+            )}
 
-          {cycles && (
-            <div>
-              <button
-                onClick={() => setShowStatistics(!showStatistics)}
-                className="btn btn-primary"
-                disabled={!cycles.length || !!activeProcess}
-              >
-                <Info size={32} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center flex-col gap-2 border-2 p-4 shadow-lg rounded-lg h-[200px] w-[200px]">
-          <Cpu
-            size={40}
-            className={`${activeProcess ? 'animate-ping text-red-500' : ''}`}
-          />
-
-          {activeProcess && (
-            <div className="flex flex-col p-4 items-center">
-              <div className="flex p-2 gap-2 items-center">
-                <h2 className="text-green-500 italic">Executando...</h2>
+            {cycles && (
+              <div>
+                <button
+                  onClick={() => setShowStatistics(!showStatistics)}
+                  className="btn btn-primary"
+                  disabled={!cycles.length || !!activeProcess}
+                >
+                  <Info size={32} />
+                </button>
               </div>
+            )}
+          </div>
+          
 
-              <div className="flex gap-1 items-center">
-                <span
-                  style={{ backgroundColor: activeProcess?.color }}
-                  className={`rounded-full h-2 w-2 inline-block`}
-                />
-                <span>{activeProcess?.id}</span>
+
+          <div className="flex items-center flex-col gap-2 p-4 shadow-lg rounded-lg h-[200px] w-[200px]">
+            <Cpu
+              size={40}
+              className={`${activeProcess ? 'animate-ping text-red-500' : ''}`}
+            />
+
+            {activeProcess && (
+              <div className="flex flex-col p-4 items-center">
+                <div className="flex p-2 gap-2 items-center">
+                  <h2 className="text-green-500 italic">Executando...</h2>
+                </div>
+
+                <div className="flex gap-1 items-center">
+                  <span
+                    style={{ backgroundColor: activeProcess?.color }}
+                    className={`rounded-full h-2 w-2 inline-block`}
+                  />
+                  <span>{activeProcess?.id}</span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+
+        
       </div>
 
       {showModal && (
