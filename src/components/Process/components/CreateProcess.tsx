@@ -8,7 +8,7 @@ import {
 import { IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
 import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 type CreateProcessProps = {
   setProcesses: React.Dispatch<React.SetStateAction<IProcess[]>>;
@@ -33,18 +33,16 @@ export default function CreateProcess({
   const onSubmit: any = (data: IProcess) => {
     const processData: IProcess = {
       id: generateUniqueNumber(1000, 9999),
-      priority: data.priority,
+      priority: Number(data.priority),
       color: data.color,
       type: data.type,
-      runningTime: data.runningTime,
-      state: ProcessState.Waiting,
+      runningTime: Number(data.runningTime),
       cpuUsageTime: 0,
       waitingTime: 0,
-      createdAt: new Date(),
+      state: ProcessState.Ready,
     };
 
     setProcesses((prevState: IProcess[]) => [...prevState, processData]);
-
     reset();
     setShowModal(false);
   };

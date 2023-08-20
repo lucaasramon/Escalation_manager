@@ -9,7 +9,7 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
   return (
     <div className="overflow-x-auto">
       <h1 className="text-center mb-4 text-xl">Tabela de processos</h1>
-      {processes.length ? (
+      {processes?.length ? (
         <table className="table table-zebra">
           <thead>
             <tr>
@@ -20,27 +20,27 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
             </tr>
           </thead>
           <tbody>
-            {processes.map((process) => (
-              <tr key={process.id}>
+            {processes.map((process, index) => (
+              <tr key={process?.id ? process.id : index}>
                 <th>
                   <div>
                     <div className="flex items-center gap-1">
                       <span
-                        style={{ backgroundColor: process.color }}
+                        style={{ backgroundColor: process?.color }}
                         className={`rounded-full h-2 w-2 inline-block`}
                       />
-                      <span> {process.id}</span>
+                      <span> {process?.id}</span>
                     </div>
                     <div>
                       <span className="text-gray-500 text-xs">
-                        {process.type}
+                        {process?.type}
                       </span>
                     </div>
                   </div>
                 </th>
-                <td>{process.priority}</td>
-                <td>{process.runningTime} seg(s)</td>
-                <td>{process.state}</td>
+                <td>{process?.priority}</td>
+                <td>{process?.runningTime} seg(s)</td>
+                <td>{process?.state}</td>
               </tr>
             ))}
           </tbody>

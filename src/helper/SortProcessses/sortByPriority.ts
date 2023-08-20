@@ -1,13 +1,9 @@
 import { IProcess } from '@/types';
 
-export const sortByPriority = (
-  processes: IProcess[],
-  setQueuedProcesses: React.Dispatch<React.SetStateAction<IProcess[]>>,
-) => {
+export const sortByPriority = (processes: IProcess[]) => {
   const tempProcesses = [...processes];
   const sortedProcesses = tempProcesses.sort(
     (objA, objB) => Number(objB.priority) - Number(objA.priority),
   );
-  console.log(sortedProcesses);
-  setQueuedProcesses(sortedProcesses);
+  return sortedProcesses;
 };

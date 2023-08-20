@@ -7,6 +7,7 @@ export enum ProcessState {
   Ready = 'pronto',
   Running = 'executando',
   Waiting = 'esperando',
+  Finished = 'finalizado',
 }
 
 export enum EscalationAlgorithm {

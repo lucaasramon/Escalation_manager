@@ -1,23 +1,28 @@
+import { ProcessState } from '@/enums';
 import { IProcess } from '@/types';
 
-//Função responsável por alternar os processos da fila para o processo rodando
+//Função responsável por alternar os processos da fila para o processo ativo
 export const alternateQueuedProcessesHelper = async (
-  queuedProcesses: IProcess[],
+  sortedProcesses: IProcess[],
   setActiveProcess: React.Dispatch<React.SetStateAction<IProcess | null>>,
   quantum?: number | undefined,
 ) => {
   const changeActiveProcess = async (index: number) => {
-    if (index > queuedProcesses.length) {
+    if (index > sortedProcesses.length) {
       return;
     }
 
-    const process = queuedProcesses[index];
+    const process = sortedProcesses[index];
 
     await new Promise<void>((resolve) => {
       setActiveProcess(null);
       const interval = index > 0 ? 2000 : 500;
       setTimeout(() => {
-        setActiveProcess(process);
+        if (process) {
+          process.startTime = Date.now();
+          process.state = ProcessState.Running;
+          setActiveProcess(process);
+        }
         resolve();
       }, interval);
     });
@@ -28,6 +33,7 @@ export const alternateQueuedProcessesHelper = async (
         resolve();
       }, interval);
     });
+
     await changeActiveProcess(index + 1);
   };
   await changeActiveProcess(0);

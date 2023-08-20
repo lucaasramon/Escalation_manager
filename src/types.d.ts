@@ -9,7 +9,8 @@ export interface IProcess {
   cpuUsageTime: number;
   waitingTime: number;
   runningTime: number;
-  createdAt: Date;
+  createdAt?: Date;
+  startTime?: number;
 }
 
 export interface ICycle {
@@ -18,4 +19,19 @@ export interface ICycle {
   endTime?: Date;
   algorithm: EscalationAlgorithm;
   cycleProcesses: IProcess[];
+}
+
+interface IProcessesContext {
+  processes: IProcess[];
+  setProcesses: Dispatch<SetStateAction<IProcess[]>>;
+  queuedProcesses: IProcess[];
+  setQueuedProcesses: Dispatch<SetStateAction<IProcess[]>>;
+  activeProcess: IProcess | null;
+  setActiveProcess: Dispatch<SetStateAction<IProcess | null>>;
+  actualAlgorithm: EscalationAlgorithm | undefined;
+  setActualAlgorithm: Dispatch<SetStateAction<EscalationAlgorithm | undefined>>;
+  cycles: ICycle[];
+  setCycles: Dispatch<SetStateAction<ICycle[]>>;
+  activeCycle: ICycle | undefined;
+  setActiveCycle: Dispatch<SetStateAction<ICycle | undefined>>;
 }

@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
+import { ContextProvider } from '@/context/context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,12 +22,14 @@ export default function RootLayout({
       <Head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </Head>
-      <body className={inter.className}>
-        <header>
-          <Navbar />
-        </header>
-        {children}
-      </body>
+      <ContextProvider>
+        <body className={inter.className}>
+          <header>
+            <Navbar />
+          </header>
+          {children}
+        </body>
+      </ContextProvider>
     </html>
   );
 }
