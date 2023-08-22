@@ -7,7 +7,9 @@ export const alternateQueuedProcessesHelper = async (
   setActiveProcess: React.Dispatch<React.SetStateAction<IProcess | null>>,
   quantum?: number | undefined,
 ) => {
+
   const changeActiveProcess = async (index: number) => {
+    setActiveProcess(null);
     if (index > sortedProcesses.length) {
       return;
     }
@@ -15,11 +17,9 @@ export const alternateQueuedProcessesHelper = async (
     const process = sortedProcesses[index];
 
     await new Promise<void>((resolve) => {
-      setActiveProcess(null);
       const interval = index > 0 ? 2000 : 500;
       setTimeout(() => {
         if (process) {
-          process.startTime = Date.now();
           process.state = ProcessState.Running;
           setActiveProcess(process);
         }

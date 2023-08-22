@@ -6,13 +6,13 @@ import ProcessTable from './components/ProcessTable';
 import { Plus, Cpu, Play, Info } from '@phosphor-icons/react';
 import { EscalationAlgorithm, ProcessState } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
-import { alternateQueuedProcessesHelper } from '@/helper/AlternateQueuedProcesses';
+import { alternateQueuedProcessesHelper } from '@/helper/alternateQueuedProcesses';
 import { sortByFifo } from '@/helper/SortProcessses/sortByFifo';
 import { sortBySjf } from '@/helper/SortProcessses/sortBySjf';
 import { sortByPriority } from '@/helper/SortProcessses/sortByPriority';
 import Quantum from './components/Quantum';
 import CyclesStatistics from './components/Cycles/CyclesStatistics';
-import { UpdateActualCycleHelper } from '@/helper/UpdateActualCycleHelper';
+import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
 
 export default function Process() {
@@ -40,22 +40,23 @@ export default function Process() {
   //useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
     const updateActiveCycle = () => {
-      const updatedCycles = UpdateActualCycleHelper(
+      const updatedCycles = UpdateActiveCycleHelper(
         setCycles,
         activeProcess!,
         activeCycle!,
       );
+    console.log(updatedCycles)
 
-      console.log(updatedCycles);
     };
 
+
     if (activeProcess) {
-      const intervalId = setInterval(updateActiveCycle, 1000);
+      const intervalId = setInterval(updateActiveCycle, 500);
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [activeProcess, activeCycle, setCycles]);
+  }, [activeProcess]);
 
   const handlePlay = () => {
     const newCycle: ICycle = {

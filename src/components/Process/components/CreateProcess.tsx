@@ -71,6 +71,7 @@ export default function CreateProcess({
                 placeholder="Proridade"
                 min={1}
                 max={15}
+                defaultValue={5}
                 {...register('priority', { required: true })}
                 className="input input-bordered input-info w-full max-w-xs"
               />
@@ -83,6 +84,7 @@ export default function CreateProcess({
               <div className="flex flex-col gap-2">
                 <input
                   type="number"
+                  defaultValue={5}
                   min={1}
                   max={50}
                   placeholder="Tempo de execução"

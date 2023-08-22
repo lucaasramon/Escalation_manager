@@ -13,7 +13,6 @@ export default function SelectEscalationAlgorithm({
 }: EscalationAlgorithmProps) {
   const {
     register,
-    handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
