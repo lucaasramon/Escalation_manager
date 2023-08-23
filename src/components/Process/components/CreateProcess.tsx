@@ -40,6 +40,7 @@ export default function CreateProcess({
       cpuUsageTime: 0,
       waitingTime: 0,
       state: ProcessState.Ready,
+      createdAt: new Date(),
     };
 
     setProcesses((prevState: IProcess[]) => [...prevState, processData]);

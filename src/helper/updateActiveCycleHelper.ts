@@ -1,34 +1,68 @@
 import { ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
+import { Dispatch, SetStateAction } from 'react';
+
+function updateWaitingTimes(
+  elapsedSeconds: number,
+  setCycles: Dispatch<SetStateAction<ICycle[]>>,
+  activeCycle: ICycle,
+  id: number,
+  activeProcess?: IProcess,
+) {
+  console.log('chamada');
+  setCycles((prevCycles: ICycle[]) => {
+    const updatedCycles = prevCycles?.map((cycle) => {
+      if (cycle?.id === activeCycle?.id) {
+        const updatedCycleProcesses = cycle?.cycleProcesses?.map((process) => {
+          if (process?.id !== id) {
+            return {
+              ...process,
+              waitingTime: process.waitingTime + elapsedSeconds,
+            };
+          }
+          return process;
+        });
+
+        return {
+          ...cycle,
+          cycleProcesses: updatedCycleProcesses,
+        };
+      } else {
+        return cycle;
+      }
+    });
+
+    return updatedCycles;
+  });
+}
 
 export function UpdateActiveCycleHelper(
-  setCycles: React.Dispatch<React.SetStateAction<ICycle[]>>,
+  setCycles: Dispatch<SetStateAction<ICycle[]>>,
   activeProcess: IProcess,
   activeCycle: ICycle,
 ) {
-
   setCycles((prevCycles: ICycle[]) => {
     const updatedCycles = prevCycles?.map((cycle) => {
-
       if (cycle?.id === activeCycle?.id) {
         const updatedCycleProcesses = cycle?.cycleProcesses?.map((process) => {
-
           let elapsedMilliseconds = 0;
           let elapsedSeconds = 0;
-
           if (process?.id === activeProcess?.id) {
+            elapsedMilliseconds = Date.now() - process.startTime!;
+            elapsedSeconds = Math.ceil(elapsedMilliseconds / 1000);
 
-            if (!process.startTime) {
-              process.startTime = Date.now();
-            }
+            updateWaitingTimes(
+              elapsedSeconds,
+              setCycles,
+              activeCycle,
+              process.id,
+              activeProcess,
+            );
 
-              elapsedMilliseconds = Date.now() - process.startTime;
-              elapsedSeconds = Math.ceil(elapsedMilliseconds / 1000);
-
-            
             if (process?.cpuUsageTime >= process?.runningTime) {
               return {
                 ...process,
+                state: ProcessState.Finished,
               };
             }
 
@@ -36,23 +70,9 @@ export function UpdateActiveCycleHelper(
               ...process,
               cpuUsageTime: elapsedSeconds,
             };
-          } else if(process?.id !== activeProcess?.id) {
-            
-            if (!process.startTime) {
-            process.startTime = Date.now();
-              }
-
-               elapsedMilliseconds = Date.now() - process.startTime;
-               elapsedSeconds = Math.ceil(elapsedMilliseconds / 1000);
-               console.log(elapsedSeconds)
-
-              return {
-                ...process,
-                waitingTime: elapsedSeconds,
-              };
           }
 
-          return process
+          return process;
         });
 
         return {

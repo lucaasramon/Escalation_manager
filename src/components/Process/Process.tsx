@@ -37,26 +37,50 @@ export default function Process() {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
   };
 
-  //useEffect para atualizar as informações dos processos do ciclo ativo
+  // useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
-    const updateActiveCycle = () => {
-      const updatedCycles = UpdateActiveCycleHelper(
-        setCycles,
-        activeProcess!,
-        activeCycle!,
-      );
-    console.log(updatedCycles)
-
-    };
-
-
-    if (activeProcess) {
-      const intervalId = setInterval(updateActiveCycle, 500);
-      return () => {
-        clearInterval(intervalId);
+    if (activeCycle && activeProcess) {
+      const updateActiveCycle = () => {
+        const updatedCycles = UpdateActiveCycleHelper(
+          setCycles,
+          activeProcess,
+          activeCycle,
+        );
       };
+      if (activeProcess) {
+        const intervalId = setInterval(updateActiveCycle, 500);
+        return () => {
+          clearInterval(intervalId);
+        };
+      }
     }
-  }, [activeProcess]);
+  }, [activeProcess, activeCycle, setCycles]);
+
+  //useEffect para ordenar os processos e chamar a função de alternar os processos ordenados
+  useEffect(() => {
+    let sortedProcesses: IProcess[] = [];
+
+    if (activeCycle) {
+      if (actualAlgorithm === EscalationAlgorithm.FIFO) {
+        sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
+      } else if (actualAlgorithm === EscalationAlgorithm.SJF) {
+        sortedProcesses = sortBySjf(activeCycle?.cycleProcesses);
+      } else if (actualAlgorithm === EscalationAlgorithm.Priority) {
+        sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
+      } else if (actualAlgorithm === EscalationAlgorithm.RR) {
+        sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
+      }
+
+      alternateQueuedProcessesHelper(
+        sortedProcesses,
+        activeProcess,
+        activeCycle,
+        setActiveProcess,
+        setCycles,
+        quantum && quantum,
+      );
+    }
+  }, [activeCycle]);
 
   const handlePlay = () => {
     const newCycle: ICycle = {
@@ -67,28 +91,6 @@ export default function Process() {
     };
     setActiveCycle(newCycle);
     setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
-
-    let sortedProcesses: IProcess[] = [];
-
-    if (actualAlgorithm === EscalationAlgorithm.FIFO) {
-      sortedProcesses = sortByFifo(newCycle?.cycleProcesses);
-    } else if (actualAlgorithm === EscalationAlgorithm.SJF) {
-      sortedProcesses = sortBySjf(newCycle?.cycleProcesses);
-    } else if (actualAlgorithm === EscalationAlgorithm.Priority) {
-      sortedProcesses = sortByPriority(newCycle?.cycleProcesses);
-    } else if (actualAlgorithm === EscalationAlgorithm.RR) {
-      sortedProcesses = sortByFifo(newCycle?.cycleProcesses);
-    }
-
-    if (actualAlgorithm === EscalationAlgorithm.RR) {
-      alternateQueuedProcessesHelper(
-        sortedProcesses,
-        setActiveProcess,
-        quantum,
-      );
-    } else {
-      alternateQueuedProcessesHelper(sortedProcesses, setActiveProcess);
-    }
   };
 
   return (
