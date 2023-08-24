@@ -32,6 +32,9 @@ export default function Process() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [quantum, setQuantum] = useState<number | undefined>(5);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
+  const [totalWaitingTime, setTotalWaitingTime] = useState<number>(0);
+
+  console.log(totalWaitingTime)
 
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
@@ -41,20 +44,22 @@ export default function Process() {
   useEffect(() => {
     if (activeCycle && activeProcess) {
       const updateActiveCycle = () => {
-        const updatedCycles = UpdateActiveCycleHelper(
+        UpdateActiveCycleHelper(
           setCycles,
           activeProcess,
           activeCycle,
+          totalWaitingTime, 
+          setTotalWaitingTime
         );
       };
       if (activeProcess) {
-        const intervalId = setInterval(updateActiveCycle, 500);
+        const intervalId = setInterval(updateActiveCycle, 4000);
         return () => {
           clearInterval(intervalId);
         };
       }
     }
-  }, [activeProcess, activeCycle, setCycles]);
+  }, [activeProcess]);
 
   //useEffect para ordenar os processos e chamar a função de alternar os processos ordenados
   useEffect(() => {

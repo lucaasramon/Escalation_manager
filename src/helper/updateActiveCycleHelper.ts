@@ -7,9 +7,7 @@ function updateWaitingTimes(
   setCycles: Dispatch<SetStateAction<ICycle[]>>,
   activeCycle: ICycle,
   id: number,
-  activeProcess?: IProcess,
 ) {
-  console.log('chamada');
   setCycles((prevCycles: ICycle[]) => {
     const updatedCycles = prevCycles?.map((cycle) => {
       if (cycle?.id === activeCycle?.id) {
@@ -17,7 +15,7 @@ function updateWaitingTimes(
           if (process?.id !== id) {
             return {
               ...process,
-              waitingTime: process.waitingTime + elapsedSeconds,
+              waitingTime: elapsedSeconds,
             };
           }
           return process;
@@ -40,9 +38,15 @@ export function UpdateActiveCycleHelper(
   setCycles: Dispatch<SetStateAction<ICycle[]>>,
   activeProcess: IProcess,
   activeCycle: ICycle,
+  totalWaitingTime: any, 
+  setTotalWaitingTime: any
 ) {
+
+
   setCycles((prevCycles: ICycle[]) => {
     const updatedCycles = prevCycles?.map((cycle) => {
+    console.log(cycle.id)
+
       if (cycle?.id === activeCycle?.id) {
         const updatedCycleProcesses = cycle?.cycleProcesses?.map((process) => {
           let elapsedMilliseconds = 0;
@@ -56,7 +60,6 @@ export function UpdateActiveCycleHelper(
               setCycles,
               activeCycle,
               process.id,
-              activeProcess,
             );
 
             if (process?.cpuUsageTime >= process?.runningTime) {
@@ -70,6 +73,7 @@ export function UpdateActiveCycleHelper(
               ...process,
               cpuUsageTime: elapsedSeconds,
             };
+
           }
 
           return process;
