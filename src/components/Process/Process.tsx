@@ -34,6 +34,9 @@ export default function Process() {
   const [quantum, setQuantum] = useState<number | undefined>(0);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
 
+  // console.log('activeCycle?.id: ', activeCycle?.id);
+  // console.log('cycles: ', cycles);
+
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
   };
@@ -111,12 +114,23 @@ export default function Process() {
   }, [activeProcess]);
 
   const handlePlay = () => {
+    const newProcesses = processes.map((process) => ({
+      ...process,
+      cpuUsageTime: 0,
+      waitingTime: 0,
+      state: ProcessState.Ready,
+    }));
+
+    setProcesses(newProcesses);
+
     const newCycle: ICycle = {
       id: cycles.length + 1,
       algorithm: actualAlgorithm,
-      cycleProcesses: processes,
+      cycleProcesses: newProcesses,
       status: CycleState.Active,
     };
+
+    console.log(newCycle);
 
     setActiveCycle(newCycle);
     setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
