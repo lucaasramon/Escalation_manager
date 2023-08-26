@@ -39,7 +39,7 @@ export default function Process() {
   };
 
   const wipeProcesses = () => {
-    setProcessesToDisplay([]);
+    setProcesses([]);
   };
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function Process() {
 
       alternateQueuedProcessesHelper(
         sortedProcesses,
-        activeProcess,
+        actualAlgorithm,
         activeCycle,
         setActiveProcess,
         setCycles,
@@ -147,9 +147,9 @@ export default function Process() {
               Processo <Plus size={32} />
             </button>
 
-            {/* <button className="btn btn-primary" onClick={wipeProcesses}>
+            <button className="btn btn-primary" onClick={wipeProcesses}>
               Limpar <Broom size={32} />
-            </button> */}
+            </button>
           </div>
 
           <button

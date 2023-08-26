@@ -31,6 +31,7 @@ export default function CreateProcess({
   } = useForm();
 
   const { actualAlgorithm, setProcesses } = useProcessesContext();
+  const shouldUseQuantum = actualAlgorithm === EscalationAlgorithm.RR;
 
   const onSubmit: any = (data: IProcess) => {
     const newProcess: IProcess = {
@@ -38,7 +39,7 @@ export default function CreateProcess({
       priority: Number(data.priority),
       color: data.color,
       type: data.type,
-      runningTime: quantum ? quantum : Number(data.runningTime),
+      runningTime: shouldUseQuantum ? quantum! : Number(data.runningTime),
       cpuUsageTime: 0,
       waitingTime: 0,
       state: ProcessState.Ready,

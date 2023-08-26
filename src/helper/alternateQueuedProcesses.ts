@@ -1,10 +1,10 @@
-import { ProcessState } from '@/enums';
+import { EscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 
 //Função responsável por alternar os processos da fila para o processo ativo
 export const alternateQueuedProcessesHelper = async (
   sortedProcesses: IProcess[],
-  activeProcess: IProcess | null,
+  actualAlgorithm: EscalationAlgorithm,
   activeCycle: ICycle,
   setActiveProcess: React.Dispatch<React.SetStateAction<IProcess | null>>,
   setCycles: React.Dispatch<React.SetStateAction<ICycle[]>>,
@@ -61,8 +61,9 @@ export const alternateQueuedProcessesHelper = async (
     });
 
     await new Promise<void>((resolve) => {
-      const interval = quantum
-        ? quantum * 1000
+      const shouldUseQuantum = actualAlgorithm === EscalationAlgorithm.RR;
+      const interval = shouldUseQuantum
+        ? quantum! * 1000
         : tempProcess?.runningTime * 1000;
       setTimeout(() => {
         resolve();
