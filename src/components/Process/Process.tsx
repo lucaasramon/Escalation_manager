@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import CreateProcess from './components/CreateProcess';
 import { ICycle, IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
-import { Plus, Cpu, Play, Info } from '@phosphor-icons/react';
-import { EscalationAlgorithm, ProcessState } from '@/enums';
+import { Plus, Cpu, Play, Info, Broom } from '@phosphor-icons/react';
+import { CycleState, EscalationAlgorithm, ProcessState } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
 import { alternateQueuedProcessesHelper } from '@/helper/alternateQueuedProcesses';
 import { sortByFifo } from '@/helper/SortProcessses/sortByFifo';
@@ -22,38 +22,39 @@ export default function Process() {
     activeCycle,
     activeProcess,
     actualAlgorithm,
-    processes,
-    setActiveCycle,
     setActiveProcess,
     setActualAlgorithm,
-    setProcesses,
+    setProcessesToDisplay,
   } = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [quantum, setQuantum] = useState<number | undefined>(5);
+  const [quantum, setQuantum] = useState<number | undefined>(0);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
-  const [totalWaitingTime, setTotalWaitingTime] = useState<number>(0);
-
-  console.log(totalWaitingTime)
 
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
   };
 
+  const wipeProcesses = () => {
+    setProcessesToDisplay([]);
+  };
+
+  useEffect(() => {
+    const activeCycleFound: ICycle | undefined = cycles?.find(
+      (cycle) => cycle.id === activeCycle?.id,
+    );
+
+    setProcessesToDisplay(activeCycleFound?.cycleProcesses);
+  }, [cycles]);
+
   // useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
     if (activeCycle && activeProcess) {
       const updateActiveCycle = () => {
-        UpdateActiveCycleHelper(
-          setCycles,
-          activeProcess,
-          activeCycle,
-          totalWaitingTime, 
-          setTotalWaitingTime
-        );
+        UpdateActiveCycleHelper(setCycles, activeProcess, activeCycle, cycles);
       };
       if (activeProcess) {
-        const intervalId = setInterval(updateActiveCycle, 4000);
+        const intervalId = setInterval(updateActiveCycle, 950);
         return () => {
           clearInterval(intervalId);
         };
@@ -61,11 +62,21 @@ export default function Process() {
     }
   }, [activeProcess]);
 
-  //useEffect para ordenar os processos e chamar a função de alternar os processos ordenados
-  useEffect(() => {
-    let sortedProcesses: IProcess[] = [];
+  const handlePlay = () => {
+    setCycles((prevCycles: ICycle[]) => {
+      const activeCycleFound = prevCycles?.find(
+        (cycle) => cycle?.id === activeCycle?.id,
+      );
+
+      if (activeCycleFound) {
+        activeCycleFound.status = CycleState.Finished;
+      }
+
+      return [...prevCycles];
+    });
 
     if (activeCycle) {
+      let sortedProcesses: IProcess[] = [];
       if (actualAlgorithm === EscalationAlgorithm.FIFO) {
         sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
       } else if (actualAlgorithm === EscalationAlgorithm.SJF) {
@@ -85,52 +96,52 @@ export default function Process() {
         quantum && quantum,
       );
     }
-  }, [activeCycle]);
-
-  const handlePlay = () => {
-    const newCycle: ICycle = {
-      id: cycles?.length + 1,
-      algorithm: actualAlgorithm!,
-      cycleProcesses: processes,
-      startTime: new Date(),
-    };
-    setActiveCycle(newCycle);
-    setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
   };
 
   return (
     <div>
       <div className="flex flex-col gap-4 items-center p-2">
-        <div className="flex items-center justify-between w-full">
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowModal(!showModal)}
-          >
-            Processo <Plus size={32} />
-          </button>
+        <div className="w-full flex flex-col gap-2 items-start md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-2 md:flex-row">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowModal(!showModal)}
+              disabled={!!activeProcess}
+            >
+              Processo <Plus size={32} />
+            </button>
+
+            {/* <button className="btn btn-primary" onClick={wipeProcesses}>
+              Limpar <Broom size={32} />
+            </button> */}
+          </div>
 
           <button
             onClick={handlePlay}
             className="btn btn-primary"
-            disabled={!processes.length || !!activeProcess}
+            disabled={!!activeProcess || cycles.length === 0}
           >
             <Play size={32} />
           </button>
         </div>
 
         <div className="flex gap-2 justify-between items-center w-full">
-          <SelectEscalationAlgorithm setActualAlgorithm={setActualAlgorithm} />
+          <div className="flex flex-col gap-2 justify-start items-start">
+            <SelectEscalationAlgorithm
+              setActualAlgorithm={setActualAlgorithm}
+            />
 
-          {actualAlgorithm === EscalationAlgorithm.RR && (
-            <Quantum setQuantum={setQuantum} quantum={quantum} />
-          )}
+            {actualAlgorithm === EscalationAlgorithm.RR && (
+              <Quantum setQuantum={setQuantum} quantum={quantum} />
+            )}
+          </div>
 
           {cycles && (
             <div>
               <button
                 onClick={toggleShowStatistics}
                 className="btn btn-primary"
-                disabled={!cycles.length || !!activeProcess}
+                disabled={cycles.length === 0}
               >
                 <Info size={32} />
               </button>
@@ -164,10 +175,9 @@ export default function Process() {
 
       {showModal && (
         <CreateProcess
-          setProcesses={setProcesses}
           setShowModal={setShowModal}
-          actualAlgorithm={actualAlgorithm}
           showModal={showModal}
+          quantum={quantum}
         />
       )}
 
@@ -178,7 +188,7 @@ export default function Process() {
         />
       )}
 
-      <ProcessTable processes={processes} />
+      <ProcessTable cycles={cycles} quantum={quantum} />
     </div>
   );
 }

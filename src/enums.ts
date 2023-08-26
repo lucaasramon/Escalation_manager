@@ -10,6 +10,11 @@ export enum ProcessState {
   Finished = 'finalizado',
 }
 
+export enum CycleState {
+  Active = 'ativo',
+  Finished = 'finalizado',
+}
+
 export enum EscalationAlgorithm {
   FIFO = 'First In First Out',
   SJF = 'Shortest Job First',

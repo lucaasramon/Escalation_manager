@@ -15,15 +15,14 @@ export interface IProcess {
 
 export interface ICycle {
   id: number;
-  startTime: Date;
-  endTime?: Date;
+  status: CycleState;
   algorithm: EscalationAlgorithm;
   cycleProcesses: IProcess[];
 }
 
 interface IProcessesContext {
-  processes: IProcess[];
-  setProcesses: Dispatch<SetStateAction<IProcess[]>>;
+  processesToDisplay: IProcess[];
+  setProcessesToDisplay: Dispatch<SetStateAction<IProcess[]>>;
   queuedProcesses: IProcess[];
   setQueuedProcesses: Dispatch<SetStateAction<IProcess[]>>;
   activeProcess: IProcess | null;

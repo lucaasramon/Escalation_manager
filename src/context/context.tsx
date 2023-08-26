@@ -3,13 +3,13 @@ import { EscalationAlgorithm } from '@/enums';
 import { ICycle, IProcess, IProcessesContext } from '@/types';
 import { useContext, createContext, useState } from 'react';
 
-
-export const ProcessesContext =
-  createContext<IProcessesContext>({} as IProcessesContext);
+export const ProcessesContext = createContext<IProcessesContext>(
+  {} as IProcessesContext,
+);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
-  const [processes, setProcesses] = useState<IProcess[]>([]);
   const [queuedProcesses, setQueuedProcesses] = useState<IProcess[]>([]);
+  const [processesToDisplay, setProcessesToDisplay] = useState<IProcess[]>([]);
   const [activeProcess, setActiveProcess] = useState<IProcess | null>(null);
   const [actualAlgorithm, setActualAlgorithm] = useState<
     EscalationAlgorithm | undefined
@@ -17,19 +17,21 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [cycles, setCycles] = useState<ICycle[]>([]);
   const [activeCycle, setActiveCycle] = useState<ICycle | undefined>(undefined);
 
+  console.log(processesToDisplay);
+
   const contextValue: IProcessesContext = {
     activeCycle,
     activeProcess,
     actualAlgorithm,
     cycles,
-    processes,
     queuedProcesses,
     setActiveCycle,
     setActiveProcess,
     setActualAlgorithm,
     setCycles,
-    setProcesses,
     setQueuedProcesses,
+    processesToDisplay,
+    setProcessesToDisplay,
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { EscalationAlgorithm } from '@/enums';
+import { useProcessesContext } from '@/context/context';
 
 type EscalationAlgorithmProps = {
   setActualAlgorithm: React.Dispatch<
@@ -17,6 +18,8 @@ export default function SelectEscalationAlgorithm({
     formState: { errors },
   } = useForm();
 
+  const { activeProcess } = useProcessesContext();
+
   const selectedAlgorithm = watch('algorithm', '');
 
   useEffect(() => {
@@ -26,11 +29,15 @@ export default function SelectEscalationAlgorithm({
   return (
     <form className="flex flex-col items-center gap-4 max-w-[500px]">
       <div className="flex flex-col gap-2">
+        {/* <label htmlFor="algorithm">Algoritmo de escalonamento</label> */}
         <select
+          disabled={!!activeProcess}
           className="select select-info w-full max-w-xs"
           {...register('algorithm', { required: true })}
         >
-          <option disabled>Selecione a algoritmo</option>
+          <option disabled className="text-gray-600">
+            Selecione a algoritmo
+          </option>
           {Object.keys(EscalationAlgorithm).map((algorithm, index) => (
             <option
               key={index}

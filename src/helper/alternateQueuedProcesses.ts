@@ -24,10 +24,6 @@ export const alternateQueuedProcessesHelper = async (
         if (tempProcess) {
           setActiveProcess({ ...tempProcess, startTime: Date.now() });
 
-          // while (!activeProcess || !activeCycle) {
-          //   await new Promise((resolve) => setTimeout(resolve, 100));
-          // }
-
           setCycles((prevCycles) => {
             if (Array.isArray(prevCycles)) {
               const updatedCycles = prevCycles.map((cycle) => {

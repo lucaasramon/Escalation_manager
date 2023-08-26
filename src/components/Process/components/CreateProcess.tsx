@@ -1,27 +1,27 @@
 'use client';
+import { useProcessesContext } from '@/context/context';
 import {
+  CycleState,
   EscalationAlgorithm,
   ProcessState,
   ProcessType,
   colors,
 } from '@/enums';
-import { IProcess } from '@/types';
+import { ICycle, IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
 type CreateProcessProps = {
-  setProcesses: React.Dispatch<React.SetStateAction<IProcess[]>>;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   showModal: boolean;
-  actualAlgorithm?: EscalationAlgorithm;
+  quantum?: number;
 };
 
 export default function CreateProcess({
-  setProcesses,
   setShowModal,
   showModal,
-  actualAlgorithm,
+  quantum,
 }: CreateProcessProps) {
   const {
     register,
@@ -30,20 +30,46 @@ export default function CreateProcess({
     formState: { errors },
   } = useForm();
 
+  const {
+    activeCycle,
+    cycles,
+    setActiveCycle,
+    actualAlgorithm,
+    setCycles,
+  } = useProcessesContext();
+
   const onSubmit: any = (data: IProcess) => {
-    const processData: IProcess = {
+    const newProcess: IProcess = {
       id: generateUniqueNumber(1000, 9999),
       priority: Number(data.priority),
       color: data.color,
       type: data.type,
-      runningTime: Number(data.runningTime),
+      runningTime: quantum ? quantum : Number(data.runningTime),
       cpuUsageTime: 0,
       waitingTime: 0,
       state: ProcessState.Ready,
       createdAt: new Date(),
     };
 
-    setProcesses((prevState: IProcess[]) => [...prevState, processData]);
+    const activeCycleFound = cycles?.find(
+      (cycle) => cycle.status === CycleState.Active,
+    );
+
+    console.log('activeCycleFound: ', activeCycleFound);
+
+    if (!activeCycleFound) {
+      const newCycle: ICycle = {
+        id: cycles.length + 1,
+        algorithm: actualAlgorithm,
+        cycleProcesses: [newProcess],
+        status: CycleState.Active,
+      };
+      setActiveCycle(newCycle);
+      setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
+    } else {
+      activeCycleFound?.cycleProcesses.push(newProcess);
+    }
+
     reset();
     setShowModal(false);
   };
@@ -67,6 +93,7 @@ export default function CreateProcess({
           </h1>
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col gap-2">
+              <label htmlFor="priority"> Prioridade</label>
               <input
                 type="number"
                 placeholder="Proridade"
@@ -83,6 +110,7 @@ export default function CreateProcess({
 
             {actualAlgorithm !== EscalationAlgorithm.RR && (
               <div className="flex flex-col gap-2">
+                <label htmlFor="runningTime">Tempo de execução (seg)</label>
                 <input
                   type="number"
                   defaultValue={5}
@@ -99,6 +127,7 @@ export default function CreateProcess({
             )}
 
             <div className="flex flex-col gap-2">
+              <label htmlFor="color">Cor</label>
               <select
                 className="select select-info w-full max-w-xs"
                 {...register('color', { required: true })}
@@ -119,6 +148,7 @@ export default function CreateProcess({
             </div>
 
             <div className="flex flex-col gap-2">
+              <label htmlFor="color">Tipo de processo </label>
               <select
                 className="select select-info w-full max-w-xs "
                 {...register('type', { required: true })}
@@ -134,7 +164,7 @@ export default function CreateProcess({
           </div>
 
           <button type="submit" className="btn btn-success">
-            Finalizar
+            Criar
           </button>
         </form>
       </div>

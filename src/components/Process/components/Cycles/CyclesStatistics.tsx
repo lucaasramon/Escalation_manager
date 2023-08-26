@@ -1,3 +1,4 @@
+import { useProcessesContext } from '@/context/context';
 import { ICycle } from '@/types';
 import React from 'react';
 
@@ -10,6 +11,8 @@ export default function CyclesStatistics({
   showStatistics,
   cycles,
 }: CyclesStatisticsProps) {
+  const { activeCycle } = useProcessesContext();
+
   return (
     <dialog id="my_modal_4" className="modal modal-open">
       <div className="modal-box">
@@ -23,7 +26,21 @@ export default function CyclesStatistics({
         <div className="p-4 text-white">
           {cycles?.map((cycle) => (
             <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
-              <h1 className="text-lg font-semibold mb-2">{cycle.algorithm}</h1>
+              <div className="flex gap-2 w-full justify-between">
+                <h1 className="text-lg font-semibold mb-2">
+                  {cycle.algorithm}
+                </h1>
+                {activeCycle?.id === cycle?.id ? (
+                  <h1 className="text-lg font-semibold mb-2 italic text-green-600">
+                    Ciclo ativo
+                  </h1>
+                ) : (
+                  <h1 className="text-lg font-semibold mb-2 italic text-red-600">
+                    Ciclo finalizado
+                  </h1>
+                )}
+              </div>
+
               {cycle.cycleProcesses?.map((process) => (
                 <div key={process?.id} className="border-b p-2">
                   <ul className="list-none p-0">
