@@ -4,18 +4,19 @@ import { ICycle, IProcess } from '@/types';
 import React from 'react';
 
 type ProcessTableProps = {
-  cycles: ICycle[] | undefined;
   quantum: number | undefined;
 };
 
 export default function ProcessTable({ quantum }: ProcessTableProps) {
-  const { activeProcess, actualAlgorithm, processesToDisplay } =
+  const { activeProcess, actualAlgorithm, processes, processesToDisplay } =
     useProcessesContext();
+
+  // const processesLit = processesToDisplay ? processesToDisplay : processes;
 
   return (
     <div className="overflow-x-auto">
       <h1 className="text-center mb-4 text-xl">Tabela de processos</h1>
-      {processesToDisplay?.length ? (
+      {processes?.length ? (
         <table className="table table-zebra">
           <thead>
             <tr>
@@ -28,7 +29,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
             </tr>
           </thead>
           <tbody>
-            {processesToDisplay.map((process, index) => (
+            {processes.map((process, index) => (
               <tr key={process?.id ? process.id : index} className={`w-full `}>
                 <td>
                   <div>

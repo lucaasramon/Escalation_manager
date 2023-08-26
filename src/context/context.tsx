@@ -9,6 +9,7 @@ export const ProcessesContext = createContext<IProcessesContext>(
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [queuedProcesses, setQueuedProcesses] = useState<IProcess[]>([]);
+  const [processes, setProcesses] = useState<IProcess[]>([]);
   const [processesToDisplay, setProcessesToDisplay] = useState<IProcess[]>([]);
   const [activeProcess, setActiveProcess] = useState<IProcess | null>(null);
   const [actualAlgorithm, setActualAlgorithm] = useState<
@@ -17,9 +18,9 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [cycles, setCycles] = useState<ICycle[]>([]);
   const [activeCycle, setActiveCycle] = useState<ICycle | undefined>(undefined);
 
-  console.log(processesToDisplay);
-
   const contextValue: IProcessesContext = {
+    processes,
+    setProcesses,
     activeCycle,
     activeProcess,
     actualAlgorithm,

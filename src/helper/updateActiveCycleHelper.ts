@@ -1,4 +1,4 @@
-import { ProcessState } from '@/enums';
+import { EscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -6,18 +6,20 @@ export function UpdateActiveCycleHelper(
   setCycles: Dispatch<SetStateAction<ICycle[]>>,
   activeProcess: IProcess,
   activeCycle: ICycle,
-  cycles: ICycle[],
+  setProcesses: Dispatch<SetStateAction<IProcess[]>>,
+  quantum?: number,
 ) {
   setCycles((prevCycles: ICycle[]) => {
     const updatedCycles = prevCycles?.map((cycle) => {
-      console.log('activeCycle: ', activeCycle.id);
-      console.log('cycle: ', cycle.id);
-      console.log('cycles: ', cycles);
       if (cycle?.id === activeCycle?.id) {
-        console.log('estou aqui');
         const updatedCycleProcesses = cycle?.cycleProcesses?.map((process) => {
+          const timeLimit =
+            cycle.algorithm === EscalationAlgorithm.RR
+              ? quantum
+              : process?.runningTime;
+
           if (process?.id === activeProcess?.id) {
-            if (Math.ceil(process?.cpuUsageTime + 1) >= process?.runningTime) {
+            if (Math.ceil(process?.cpuUsageTime + 1) >= timeLimit!) {
               process.state = ProcessState.Finished;
             }
 
@@ -33,6 +35,8 @@ export function UpdateActiveCycleHelper(
           }
         });
 
+        setProcesses(updatedCycleProcesses);
+
         return {
           ...cycle,
           cycleProcesses: updatedCycleProcesses,
@@ -44,4 +48,41 @@ export function UpdateActiveCycleHelper(
 
     return updatedCycles;
   });
+
+  // setProcesses((prevProcesses: IProcess[]) => {
+
+  //       const updatedProcesses = prevProcesses.map((process) => {
+  //         const timeLimit =
+  //           cycle.algorithm === EscalationAlgorithm.RR
+  //             ? quantum
+  //             : process?.runningTime;
+
+  //         if (process?.id === activeProcess?.id) {
+  //           if (Math.ceil(process?.cpuUsageTime + 1) >= timeLimit!) {
+  //             process.state = ProcessState.Finished;
+  //           }
+
+  //           return {
+  //             ...process,
+  //             cpuUsageTime: Math.ceil(process.cpuUsageTime + 1),
+  //           };
+  //         } else {
+  //           return {
+  //             ...process,
+  //             waitingTime: Math.ceil(process.waitingTime + 1),
+  //           };
+  //         }
+  //       });
+
+  //       return {
+  //         ...cycle,
+  //         cycleProcesses: updatedCycleProcesses,
+  //       };
+  //     } else {
+  //       return cycle;
+  //     }
+  //   });
+
+  //   return updatedCycles;
+  // });
 }

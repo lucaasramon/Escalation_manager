@@ -9,6 +9,7 @@ export interface IProcess {
   cpuUsageTime: number;
   waitingTime: number;
   runningTime: number;
+  quantum?: number;
   createdAt?: Date;
   startTime?: number;
 }
@@ -21,6 +22,8 @@ export interface ICycle {
 }
 
 interface IProcessesContext {
+  processes: IProcess[];
+  setProcesses: Dispatch<SetStateAction<IProcess[]>>;
   processesToDisplay: IProcess[];
   setProcessesToDisplay: Dispatch<SetStateAction<IProcess[]>>;
   queuedProcesses: IProcess[];

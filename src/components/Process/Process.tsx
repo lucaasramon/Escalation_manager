@@ -25,6 +25,9 @@ export default function Process() {
     setActiveProcess,
     setActualAlgorithm,
     setProcessesToDisplay,
+    setActiveCycle,
+    processes,
+    setProcesses,
   } = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -40,41 +43,29 @@ export default function Process() {
   };
 
   useEffect(() => {
-    const activeCycleFound: ICycle | undefined = cycles?.find(
+    const activeCycleFound: ICycle | undefined = cycles.find(
       (cycle) => cycle.id === activeCycle?.id,
     );
 
     setProcessesToDisplay(activeCycleFound?.cycleProcesses);
-  }, [cycles]);
+  }, [cycles, activeCycle?.id, setProcessesToDisplay]);
 
-  // useEffect para atualizar as informações dos processos do ciclo ativo
+  // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
-    if (activeCycle && activeProcess) {
-      const updateActiveCycle = () => {
-        UpdateActiveCycleHelper(setCycles, activeProcess, activeCycle, cycles);
-      };
-      if (activeProcess) {
-        const intervalId = setInterval(updateActiveCycle, 950);
-        return () => {
-          clearInterval(intervalId);
+    setProcesses((prevProcesses: IProcess[]) =>
+      prevProcesses.map((process) => {
+        return {
+          ...process,
+          cpuUsageTime: 0,
+          waitingTime: 0,
+          state: ProcessState.Ready,
         };
-      }
-    }
-  }, [activeProcess]);
+      }),
+    );
+  }, [actualAlgorithm, setProcesses]);
 
-  const handlePlay = () => {
-    setCycles((prevCycles: ICycle[]) => {
-      const activeCycleFound = prevCycles?.find(
-        (cycle) => cycle?.id === activeCycle?.id,
-      );
-
-      if (activeCycleFound) {
-        activeCycleFound.status = CycleState.Finished;
-      }
-
-      return [...prevCycles];
-    });
-
+  // useEffect para ordenar e alternar os processos na cpu
+  useEffect(() => {
     if (activeCycle) {
       let sortedProcesses: IProcess[] = [];
       if (actualAlgorithm === EscalationAlgorithm.FIFO) {
@@ -96,6 +87,51 @@ export default function Process() {
         quantum && quantum,
       );
     }
+  }, [activeCycle]);
+
+  // useEffect para atualizar as informações dos processos do ciclo ativo
+  useEffect(() => {
+    if (activeCycle && activeProcess) {
+      const updateActiveCycle = () => {
+        UpdateActiveCycleHelper(
+          setCycles,
+          activeProcess,
+          activeCycle,
+          setProcesses,
+          quantum,
+        );
+      };
+      if (activeProcess) {
+        const intervalId = setInterval(updateActiveCycle, 950);
+        return () => {
+          clearInterval(intervalId);
+        };
+      }
+    }
+  }, [activeProcess]);
+
+  const handlePlay = () => {
+    const newCycle: ICycle = {
+      id: cycles.length + 1,
+      algorithm: actualAlgorithm,
+      cycleProcesses: processes,
+      status: CycleState.Active,
+    };
+
+    setActiveCycle(newCycle);
+    setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
+
+    // setCycles((prevCycles: ICycle[]) => {
+    //   const activeCycleFound = prevCycles?.find(
+    //     (cycle) => cycle?.id === activeCycle?.id,
+    //   );
+
+    //   if (activeCycleFound) {
+    //     activeCycleFound.status = CycleState.Finished;
+    //   }
+
+    //   return [...prevCycles];
+    // });
   };
 
   return (
@@ -119,7 +155,7 @@ export default function Process() {
           <button
             onClick={handlePlay}
             className="btn btn-primary"
-            disabled={!!activeProcess || cycles.length === 0}
+            // disabled={!!activeProcess || cycles.length === 0}
           >
             <Play size={32} />
           </button>
@@ -141,7 +177,7 @@ export default function Process() {
               <button
                 onClick={toggleShowStatistics}
                 className="btn btn-primary"
-                disabled={cycles.length === 0}
+                // disabled={cycles.length === 0}
               >
                 <Info size={32} />
               </button>
@@ -188,7 +224,7 @@ export default function Process() {
         />
       )}
 
-      <ProcessTable cycles={cycles} quantum={quantum} />
+      <ProcessTable quantum={quantum} />
     </div>
   );
 }

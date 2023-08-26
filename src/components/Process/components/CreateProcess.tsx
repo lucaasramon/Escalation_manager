@@ -30,13 +30,7 @@ export default function CreateProcess({
     formState: { errors },
   } = useForm();
 
-  const {
-    activeCycle,
-    cycles,
-    setActiveCycle,
-    actualAlgorithm,
-    setCycles,
-  } = useProcessesContext();
+  const { actualAlgorithm, setProcesses } = useProcessesContext();
 
   const onSubmit: any = (data: IProcess) => {
     const newProcess: IProcess = {
@@ -51,24 +45,24 @@ export default function CreateProcess({
       createdAt: new Date(),
     };
 
-    const activeCycleFound = cycles?.find(
-      (cycle) => cycle.status === CycleState.Active,
-    );
+    setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);
 
-    console.log('activeCycleFound: ', activeCycleFound);
+    // const activeCycleFound = cycles?.find(
+    //   (cycle) => cycle.status === CycleState.Active,
+    // );
 
-    if (!activeCycleFound) {
-      const newCycle: ICycle = {
-        id: cycles.length + 1,
-        algorithm: actualAlgorithm,
-        cycleProcesses: [newProcess],
-        status: CycleState.Active,
-      };
-      setActiveCycle(newCycle);
-      setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
-    } else {
-      activeCycleFound?.cycleProcesses.push(newProcess);
-    }
+    // if (!activeCycleFound) {
+    //   const newCycle: ICycle = {
+    //     id: cycles.length + 1,
+    //     algorithm: actualAlgorithm,
+    //     cycleProcesses: [newProcess],
+    //     status: CycleState.Active,
+    //   };
+    //   setActiveCycle(newCycle);
+    //   setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
+    // } else {
+    //   activeCycleFound?.cycleProcesses.push(newProcess);
+    // }
 
     reset();
     setShowModal(false);
