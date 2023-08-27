@@ -161,7 +161,7 @@ export default function Process() {
             <button
               className="btn btn-primary"
               onClick={wipeProcesses}
-              disabled={processes.length === 0}
+              disabled={processes.length === 0 || !!activeProcess}
             >
               Limpar <Broom size={32} />
             </button>
