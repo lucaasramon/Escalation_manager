@@ -31,11 +31,8 @@ export default function Process() {
   } = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [quantum, setQuantum] = useState<number | undefined>(0);
+  const [quantum, setQuantum] = useState<number | undefined>(5);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
-
-  // console.log('activeCycle?.id: ', activeCycle?.id);
-  // console.log('cycles: ', cycles);
 
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
@@ -161,7 +158,11 @@ export default function Process() {
               Processo <Plus size={32} />
             </button>
 
-            <button className="btn btn-primary" onClick={wipeProcesses}>
+            <button
+              className="btn btn-primary"
+              onClick={wipeProcesses}
+              disabled={processes.length === 0}
+            >
               Limpar <Broom size={32} />
             </button>
           </div>
@@ -169,7 +170,7 @@ export default function Process() {
           <button
             onClick={handlePlay}
             className="btn btn-primary"
-            // disabled={!!activeProcess || cycles.length === 0}
+            disabled={!!activeProcess}
           >
             <Play size={32} />
           </button>
@@ -191,7 +192,7 @@ export default function Process() {
               <button
                 onClick={toggleShowStatistics}
                 className="btn btn-primary"
-                // disabled={cycles.length === 0}
+                disabled={cycles.length === 0}
               >
                 <Info size={32} />
               </button>

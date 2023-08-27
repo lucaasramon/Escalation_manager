@@ -16,6 +16,7 @@ export default function Quantum({ setQuantum, quantum }: QuantumProps) {
       <label htmlFor="quantum">Fatia de tempo (quantum)</label>
       <input
         type="number"
+        defaultValue={quantum}
         name="quantum"
         placeholder="Defina o quantum"
         className="input input-bordered input-info w-full max-w-xs"
