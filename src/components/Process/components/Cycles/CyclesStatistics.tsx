@@ -1,17 +1,20 @@
 import { useProcessesContext } from '@/context/context';
+import { CycleState, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle } from '@/types';
 import React from 'react';
 
 type CyclesStatisticsProps = {
   showStatistics: () => void;
   cycles: ICycle[];
+  quantum: number | undefined;
 };
 
 export default function CyclesStatistics({
   showStatistics,
   cycles,
+  quantum
 }: CyclesStatisticsProps) {
-  const { activeCycle } = useProcessesContext();
+  const { activeCycle, currentAlgorithm } = useProcessesContext();
 
   return (
     <dialog id="my_modal_4" className="modal modal-open">
@@ -27,18 +30,21 @@ export default function CyclesStatistics({
           {cycles?.map((cycle) => (
             <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
               <div className="flex gap-2 w-full justify-between">
-                <h1 className="text-lg font-semibold mb-2">
-                  {cycle.algorithm}
+                <div className='flex flex-col items-center justify-center mb-2'>
+                  <h1 className="text-lg font-semibold">
+                    {cycle.algorithm}
+                  </h1>
+                  <span className='text-blue-7 text-sm'>{cycle.isPreemptive ? "Preemptivo" : "Não preemptivo"}</span>
+                  {cycle.algorithm === PreemptiveEscalationAlgorithm.RR && (
+                      <div className="text-sm text-blue-500 flex gap-1 items-center">
+                      Quantum <p className='text-semibold'>{quantum} seg(s)</p>
+                    </div>
+                    )}                
+                </div>
+                
+                <h1 className={`text-lg font-semibold mb-2 italic ${cycle.status === CycleState.Active ? 'text-green-500' : 'text-red-500'}`}>
+                  {cycle.status} 
                 </h1>
-                {activeCycle?.id === cycle?.id ? (
-                  <h1 className="text-lg font-semibold mb-2 italic text-green-600">
-                    Ciclo ativo
-                  </h1>
-                ) : (
-                  <h1 className="text-lg font-semibold mb-2 italic text-red-600">
-                    Ciclo finalizado
-                  </h1>
-                )}
               </div>
 
               {cycle.cycleProcesses?.map((process) => (
@@ -52,12 +58,20 @@ export default function CyclesStatistics({
                       />{' '}
                       {process?.id}
                     </li>
-                    <li className="text-sm">Estado: {process?.state}</li>
                     <li className="text-sm">
-                      Utilização de CPU: {process?.cpuUsageTime} seg(s)
+                      Prioridade: {process?.priority}
+                    </li>
+                  
+                    <li className={`text-sm flex gap-1 items-center`}>Estado: <p className={`text-sm  font-normal ${process.state === ProcessState.Ready ? 'text-blue-500' : process.state === ProcessState.Running ? 'text-green-500 font-bold' : 'text-red-500'}`}>
+                     {process?.state} </p> </li>
+                    <li className="text-sm">
+                      Utilização de CPU: <span className="text-blue-700">{process?.cpuUsageTime}</span>  seg(s)
                     </li>
                     <li className="text-sm">
-                      Tempo em espera: {process?.waitingTime} seg(s)
+                      Tempo em espera: <span className="text-blue-700">{process?.waitingTime}</span> seg(s)
+                    </li>
+                    <li className="text-sm">
+                      Tempo necessário: <span className="text-blue-700">{process?.runningTime}</span> seg(s)
                     </li>
                   </ul>
                 </div>

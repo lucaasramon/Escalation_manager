@@ -4,16 +4,14 @@ import CreateProcess from './components/CreateProcess';
 import { ICycle, IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
 import { Plus, Cpu, Play, Info, Broom } from '@phosphor-icons/react';
-import { CycleState, EscalationAlgorithm, ProcessState } from '@/enums';
+import { CycleState, NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
-import { alternateQueuedProcessesHelper } from '@/helper/alternateQueuedProcesses';
-import { sortByFifo } from '@/helper/SortProcessses/sortByFifo';
-import { sortBySjf } from '@/helper/SortProcessses/sortBySjf';
-import { sortByPriority } from '@/helper/SortProcessses/sortByPriority';
 import Quantum from './components/Quantum';
 import CyclesStatistics from './components/Cycles/CyclesStatistics';
 import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
+import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
+import { changeActiveProcess } from '@/helper/changeActiveProcessHelper';
 
 export default function Process() {
   const {
@@ -21,18 +19,23 @@ export default function Process() {
     setCycles,
     activeCycle,
     activeProcess,
-    actualAlgorithm,
+    currentAlgorithm,
     setActiveProcess,
-    setActualAlgorithm,
-    setProcessesToDisplay,
     setActiveCycle,
     processes,
     setProcesses,
+    isPreemptive,
+    count,
+    setCount,
+    processIndex, 
+    setProcessIndex,
+    quantum,
+    setQuantum
   } = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [quantum, setQuantum] = useState<number | undefined>(5);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
+  const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
 
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
@@ -42,13 +45,7 @@ export default function Process() {
     setProcesses([]);
   };
 
-  useEffect(() => {
-    const activeCycleFound: ICycle | undefined = cycles.find(
-      (cycle) => cycle.id === activeCycle?.id,
-    );
-
-    setProcessesToDisplay(activeCycleFound?.cycleProcesses);
-  }, [cycles, activeCycle?.id, setProcessesToDisplay]);
+  console.log('sortedProcesses: ', sortedProcesses)
 
   // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
@@ -62,53 +59,61 @@ export default function Process() {
         };
       }),
     );
-  }, [actualAlgorithm, setProcesses]);
+  }, [currentAlgorithm]);
 
-  // useEffect para ordenar e alternar os processos na cpu
-  useEffect(() => {
-    if (activeCycle) {
-      let sortedProcesses: IProcess[] = [];
-      if (actualAlgorithm === EscalationAlgorithm.FIFO) {
-        sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
-      } else if (actualAlgorithm === EscalationAlgorithm.SJF) {
-        sortedProcesses = sortBySjf(activeCycle?.cycleProcesses);
-      } else if (actualAlgorithm === EscalationAlgorithm.Priority) {
-        sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
-      } else if (actualAlgorithm === EscalationAlgorithm.RR) {
-        sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
-      }
+  // useEffect para ordenar os processos
+  // useEffect(() => {
+  //   if(activeCycle) {
+  //     let sortedProcesses  = sortProcessesHelper(currentAlgorithm, activeCycle)
+  //     setSortedProcesses(sortedProcesses)
+  //   }
 
-      alternateQueuedProcessesHelper(
-        sortedProcesses,
-        actualAlgorithm,
-        activeCycle,
-        setActiveProcess,
-        setCycles,
-        quantum && quantum,
-      );
-    }
-  }, [activeCycle]);
+  // }, [activeCycle?.cycleProcesses, cycles, processes])
 
   // useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
     if (activeCycle && activeProcess) {
-      const updateActiveCycle = () => {
+      const intervalId = setInterval(() => {
+
         UpdateActiveCycleHelper(
           setCycles,
+          setActiveCycle,
           activeProcess,
           activeCycle,
           setProcesses,
+          setActiveProcess,
+          processIndex,
+          setProcessIndex,
+          count,
+          setCount,
           quantum,
+          sortedProcesses,
         );
+
+      }, 950);
+      return () => {
+        clearInterval(intervalId);
       };
-      if (activeProcess) {
-        const intervalId = setInterval(updateActiveCycle, 950);
-        return () => {
-          clearInterval(intervalId);
-        };
-      }
     }
   }, [activeProcess]);
+
+  // useEffect para ordenar e alternar os processos na cpu
+  useEffect(() => {
+    if (activeCycle?.status === CycleState.Active) {
+      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
+      setSortedProcesses(sortedProcesses)
+      changeActiveProcess(
+        processIndex, 
+        setActiveProcess, 
+        sortedProcesses, 
+        currentAlgorithm,
+        setProcessIndex,
+        activeCycle,
+        setCycles,
+        setActiveCycle
+      );
+    }
+  }, [activeCycle, cycles, activeProcess?.state]);
 
   const handlePlay = () => {
     const newProcesses = processes.map((process) => ({
@@ -122,27 +127,14 @@ export default function Process() {
 
     const newCycle: ICycle = {
       id: cycles.length + 1,
-      algorithm: actualAlgorithm,
+      algorithm: currentAlgorithm,
       cycleProcesses: newProcesses,
       status: CycleState.Active,
+      isPreemptive: isPreemptive
     };
-
-    console.log(newCycle);
 
     setActiveCycle(newCycle);
     setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
-
-    // setCycles((prevCycles: ICycle[]) => {
-    //   const activeCycleFound = prevCycles?.find(
-    //     (cycle) => cycle?.id === activeCycle?.id,
-    //   );
-
-    //   if (activeCycleFound) {
-    //     activeCycleFound.status = CycleState.Finished;
-    //   }
-
-    //   return [...prevCycles];
-    // });
   };
 
   return (
@@ -153,7 +145,7 @@ export default function Process() {
             <button
               className="btn btn-primary"
               onClick={() => setShowModal(!showModal)}
-              disabled={!!activeProcess}
+              disabled={false}
             >
               Processo <Plus size={32} />
             </button>
@@ -170,7 +162,7 @@ export default function Process() {
           <button
             onClick={handlePlay}
             className="btn btn-primary"
-            disabled={!!activeProcess}
+            disabled={processes.length === 0}
           >
             <Play size={32} />
           </button>
@@ -178,11 +170,9 @@ export default function Process() {
 
         <div className="flex gap-2 justify-between items-center w-full">
           <div className="flex flex-col gap-2 justify-start items-start">
-            <SelectEscalationAlgorithm
-              setActualAlgorithm={setActualAlgorithm}
-            />
+            <SelectEscalationAlgorithm/>
 
-            {actualAlgorithm === EscalationAlgorithm.RR && (
+            {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && (
               <Quantum setQuantum={setQuantum} quantum={quantum} />
             )}
           </div>
@@ -236,6 +226,7 @@ export default function Process() {
         <CyclesStatistics
           cycles={cycles}
           showStatistics={toggleShowStatistics}
+          quantum={quantum}
         />
       )}
 

@@ -1,4 +1,4 @@
-import { ProcessState, ProcessType } from './enums';
+import { ProcessState, ProcessTypem, CycleState } from './enums';
 
 export interface IProcess {
   id: number;
@@ -19,6 +19,7 @@ export interface ICycle {
   status: CycleState;
   algorithm: EscalationAlgorithm;
   cycleProcesses: IProcess[];
+  isPreemptive: boolean
 }
 
 interface IProcessesContext {
@@ -30,10 +31,18 @@ interface IProcessesContext {
   setQueuedProcesses: Dispatch<SetStateAction<IProcess[]>>;
   activeProcess: IProcess | null;
   setActiveProcess: Dispatch<SetStateAction<IProcess | null>>;
-  actualAlgorithm: EscalationAlgorithm | undefined;
-  setActualAlgorithm: Dispatch<SetStateAction<EscalationAlgorithm | undefined>>;
+  currentAlgorithm: EscalationAlgorithm | undefined;
+  setCurrentAlgorithm: Dispatch<SetStateAction<EscalationAlgorithm | undefined>>;
   cycles: ICycle[];
   setCycles: Dispatch<SetStateAction<ICycle[]>>;
   activeCycle: ICycle | undefined;
   setActiveCycle: Dispatch<SetStateAction<ICycle | undefined>>;
+  isPreemptive: boolean;
+  setIsPreemptive: Dispatch<SetStateAction<boolean>>;
+  count: number;
+  setCount: Dispatch<SetStateAction<number>>;
+  processIndex: number
+  setProcessIndex: Dispatch<SetStateAction<number>>;
+  quantum: number
+  setQuantum: Dispatch<SetStateAction<number>>;
 }

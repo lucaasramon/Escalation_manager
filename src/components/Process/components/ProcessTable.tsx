@@ -1,5 +1,5 @@
 import { useProcessesContext } from '@/context/context';
-import { EscalationAlgorithm, ProcessState } from '@/enums';
+import { PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 import React from 'react';
 
@@ -8,10 +8,8 @@ type ProcessTableProps = {
 };
 
 export default function ProcessTable({ quantum }: ProcessTableProps) {
-  const { activeProcess, actualAlgorithm, processes, processesToDisplay } =
+  const { activeProcess, currentAlgorithm, processes, activeCycle } =
     useProcessesContext();
-
-  // const processesLit = processesToDisplay ? processesToDisplay : processes;
 
   return (
     <div className="overflow-x-auto">
@@ -29,7 +27,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
             </tr>
           </thead>
           <tbody>
-            {processes.map((process, index) => (
+            {activeCycle?.cycleProcesses.map((process, index) => (
               <tr key={process?.id ? process.id : index} className={`w-full `}>
                 <td>
                   <div>
@@ -51,7 +49,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 </td>
                 <td>{process?.priority}</td>
                 <td>
-                  {actualAlgorithm === EscalationAlgorithm.RR && quantum
+                  {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && quantum
                     ? quantum
                     : process?.runningTime}
                   seg(s)

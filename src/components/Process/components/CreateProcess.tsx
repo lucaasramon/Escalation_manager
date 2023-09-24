@@ -2,7 +2,7 @@
 import { useProcessesContext } from '@/context/context';
 import {
   CycleState,
-  EscalationAlgorithm,
+  PreemptiveEscalationAlgorithm,
   ProcessState,
   ProcessType,
   colors,
@@ -21,7 +21,6 @@ type CreateProcessProps = {
 export default function CreateProcess({
   setShowModal,
   showModal,
-  quantum,
 }: CreateProcessProps) {
   const {
     register,
@@ -30,8 +29,14 @@ export default function CreateProcess({
     formState: { errors },
   } = useForm();
 
-  const { actualAlgorithm, setProcesses } = useProcessesContext();
-  const shouldUseQuantum = actualAlgorithm === EscalationAlgorithm.RR;
+  const { 
+    setProcesses, 
+    activeCycle, 
+    setActiveCycle, 
+    setCycles, 
+    isPreemptive, 
+    activeProcess
+  } = useProcessesContext();
 
   const onSubmit: any = (data: IProcess) => {
     const newProcess: IProcess = {
@@ -39,7 +44,7 @@ export default function CreateProcess({
       priority: Number(data.priority),
       color: data.color,
       type: data.type,
-      runningTime: shouldUseQuantum ? quantum! : Number(data.runningTime),
+      runningTime: Number(data.runningTime),
       cpuUsageTime: 0,
       waitingTime: 0,
       state: ProcessState.Ready,
@@ -48,22 +53,38 @@ export default function CreateProcess({
 
     setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);
 
-    // const activeCycleFound = cycles?.find(
-    //   (cycle) => cycle.status === CycleState.Active,
-    // );
-
-    // if (!activeCycleFound) {
-    //   const newCycle: ICycle = {
-    //     id: cycles.length + 1,
-    //     algorithm: actualAlgorithm,
-    //     cycleProcesses: [newProcess],
-    //     status: CycleState.Active,
-    //   };
-    //   setActiveCycle(newCycle);
-    //   setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
-    // } else {
-    //   activeCycleFound?.cycleProcesses.push(newProcess);
-    // }
+    if (activeCycle?.status === CycleState.Active && isPreemptive) {
+      setActiveCycle((prevActiveCycle: ICycle) => ({
+        ...prevActiveCycle,
+        cycleProcesses: [...prevActiveCycle.cycleProcesses.map((process) => {
+          if(process.id === activeProcess?.id) {
+            return {
+              ...process, state: ProcessState.Ready
+            }
+          }
+          return process
+        }), newProcess],
+      }));
+    
+      setCycles((prevCycles: ICycle[]) =>
+        prevCycles.map((cycle) => {
+          if (cycle.id === activeCycle.id) {
+            return {
+              ...cycle,
+              cycleProcesses: [...cycle.cycleProcesses.map((process) => {
+                if(process.id === activeProcess?.id) {
+                  return {
+                    ...process, state: ProcessState.Ready
+                  }
+                }
+                return process
+              }), newProcess],
+            };
+          }
+          return cycle;
+        })
+      );
+    }
 
     reset();
     setShowModal(false);
@@ -83,6 +104,7 @@ export default function CreateProcess({
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col items-center gap-4 max-w-[500px] p-4"
         >
+          
           <h1 className="text-lg text-green-600 font-semibold">
             Criar novo processo
           </h1>
@@ -103,12 +125,11 @@ export default function CreateProcess({
               )}
             </div>
 
-            {actualAlgorithm !== EscalationAlgorithm.RR && (
               <div className="flex flex-col gap-2">
                 <label htmlFor="runningTime">Tempo de execução (seg)</label>
                 <input
                   type="number"
-                  defaultValue={5}
+                  defaultValue={25}
                   min={1}
                   max={50}
                   placeholder="Tempo de execução"
@@ -119,7 +140,6 @@ export default function CreateProcess({
                   <span className="ml-2  text-red-500">Campo obrigatório</span>
                 )}
               </div>
-            )}
 
             <div className="flex flex-col gap-2">
               <label htmlFor="color">Cor</label>

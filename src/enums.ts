@@ -15,11 +15,14 @@ export enum CycleState {
   Finished = 'finalizado',
 }
 
-export enum EscalationAlgorithm {
-  FIFO = 'First In First Out',
-  SJF = 'Shortest Job First',
+export enum PreemptiveEscalationAlgorithm {
   Priority = 'Priority',
   RR = 'Round Robin',
+}
+
+export enum NonPreemptiveEscalationAlgorithm {
+  FIFO = 'First In First Out',
+  SJF = 'Shortest Job First',
 }
 
 export enum colors {

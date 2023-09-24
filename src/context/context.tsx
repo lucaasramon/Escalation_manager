@@ -1,7 +1,7 @@
 'use client';
-import { EscalationAlgorithm } from '@/enums';
+import { NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm } from '@/enums';
 import { ICycle, IProcess, IProcessesContext } from '@/types';
-import { useContext, createContext, useState } from 'react';
+import { useContext, createContext, useState, useEffect } from 'react';
 
 export const ProcessesContext = createContext<IProcessesContext>(
   {} as IProcessesContext,
@@ -12,27 +12,39 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [processes, setProcesses] = useState<IProcess[]>([]);
   const [processesToDisplay, setProcessesToDisplay] = useState<IProcess[]>([]);
   const [activeProcess, setActiveProcess] = useState<IProcess | null>(null);
-  const [actualAlgorithm, setActualAlgorithm] = useState<
-    EscalationAlgorithm | undefined
+  const [currentAlgorithm, setCurrentAlgorithm] = useState<
+  PreemptiveEscalationAlgorithm | NonPreemptiveEscalationAlgorithm | undefined
   >(undefined);
   const [cycles, setCycles] = useState<ICycle[]>([]);
   const [activeCycle, setActiveCycle] = useState<ICycle | undefined>(undefined);
+  const [isPreemptive, setIsPreemptive] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(1);
+  const [processIndex, setProcessIndex] = useState<number>(0);
+  const [quantum, setQuantum] = useState<number>(5);
 
   const contextValue: IProcessesContext = {
     processes,
     setProcesses,
     activeCycle,
     activeProcess,
-    actualAlgorithm,
+    currentAlgorithm,
     cycles,
     queuedProcesses,
     setActiveCycle,
     setActiveProcess,
-    setActualAlgorithm,
+    setCurrentAlgorithm,
     setCycles,
     setQueuedProcesses,
     processesToDisplay,
     setProcessesToDisplay,
+    isPreemptive,
+    setIsPreemptive,
+    count,
+    setCount,
+    processIndex,
+    setProcessIndex,
+    quantum, 
+    setQuantum
   };
 
   return (
