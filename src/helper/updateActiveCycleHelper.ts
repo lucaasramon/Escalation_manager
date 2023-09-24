@@ -1,8 +1,5 @@
-import { CycleState, NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 import { Dispatch, SetStateAction } from 'react';
-import { shouldUpdateIndexHelper } from './shouldUpdateIndexHelper';
-import { changeActiveProcess } from './changeActiveProcessHelper';
 import { updateActiveProcessHelper } from './updateActiveProcessHelper';
 
 export function UpdateActiveCycleHelper(

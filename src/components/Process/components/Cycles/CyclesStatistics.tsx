@@ -34,7 +34,7 @@ export default function CyclesStatistics({
                   <h1 className="text-lg font-semibold">
                     {cycle.algorithm}
                   </h1>
-                  <span className='text-blue-7 text-sm'>{cycle.isPreemptive ? "Preemptivo" : "Não preemptivo"}</span>
+                  <span className='text-blue-500 text-sm'>{cycle.isPreemptive ? "Preemptivo" : "Não preemptivo"}</span>
                   {cycle.algorithm === PreemptiveEscalationAlgorithm.RR && (
                       <div className="text-sm text-blue-500 flex gap-1 items-center">
                       Quantum <p className='text-semibold'>{quantum} seg(s)</p>
@@ -65,13 +65,13 @@ export default function CyclesStatistics({
                     <li className={`text-sm flex gap-1 items-center`}>Estado: <p className={`text-sm  font-normal ${process.state === ProcessState.Ready ? 'text-blue-500' : process.state === ProcessState.Running ? 'text-green-500 font-bold' : 'text-red-500'}`}>
                      {process?.state} </p> </li>
                     <li className="text-sm">
-                      Utilização de CPU: <span className="text-blue-700">{process?.cpuUsageTime}</span>  seg(s)
+                      Utilização de CPU: {process?.cpuUsageTime} seg(s)
                     </li>
                     <li className="text-sm">
-                      Tempo em espera: <span className="text-blue-700">{process?.waitingTime}</span> seg(s)
+                      Tempo em espera: {process?.waitingTime} seg(s)
                     </li>
                     <li className="text-sm">
-                      Tempo necessário: <span className="text-blue-700">{process?.runningTime}</span> seg(s)
+                      Tempo necessário: {process?.runningTime} seg(s)
                     </li>
                   </ul>
                 </div>

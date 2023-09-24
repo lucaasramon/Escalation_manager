@@ -27,7 +27,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
             </tr>
           </thead>
           <tbody>
-            {activeCycle?.cycleProcesses.map((process, index) => (
+            {processes.map((process, index) => (
               <tr key={process?.id ? process.id : index} className={`w-full `}>
                 <td>
                   <div>
