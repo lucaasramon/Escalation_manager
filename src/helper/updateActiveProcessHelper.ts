@@ -45,7 +45,7 @@ export const updateActiveProcessHelper = (
             process.state = ProcessState.Finished;
             setActiveProcess({...activeProcess, state: ProcessState.Finished})
 
-            if(cycle.algorithm  === typeof(NonPreemptiveEscalationAlgorithm)){
+            if(cycle.algorithm  === NonPreemptiveEscalationAlgorithm.FIFO || NonPreemptiveEscalationAlgorithm.SJF){
               console.log('É um algoritmo não preemptivo')
               setProcessIndex((prev) => prev + 1)
             }

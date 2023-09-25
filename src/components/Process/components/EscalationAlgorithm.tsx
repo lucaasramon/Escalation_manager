@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useController } from 'react-hook-form';
 import { PreemptiveEscalationAlgorithm, NonPreemptiveEscalationAlgorithm } from '@/enums';
 import { useProcessesContext } from '@/context/context';
 
@@ -9,9 +9,23 @@ export default function SelectEscalationAlgorithm() {
     watch,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      cycleType: 0,
+      algorithm: '',
+      color: ''
+    }
+  });
 
   const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive} = useProcessesContext();
+
+  const { field } = useController({
+    name: "cycleType", 
+    control,
+    rules: {
+      validate: (value) => value === 0 || value === 1
+    },
+  });
 
   const selectedAlgorithm = watch('algorithm', '');
 
@@ -32,19 +46,29 @@ export default function SelectEscalationAlgorithm() {
   <div className="collapse-content"> 
   <form className="flex flex-col items-center gap-4 max-w-[500px]">
       <div className="flex flex-col gap-2">
+        
       <div className="flex gap-2 items-center">
-        <input type="radio" {...register('systemsType', { required: true })} onChange={() => setIsPreemptive(false)} className="radio radio-primary" />
-          <label className="label cursor-pointer">
-            Não preemptivo
-          </label>
-        </div>
+        <input
+          type="radio"  
+          className='radio'
+          {...field} 
+          value={0}
+          onChange={() => setIsPreemptive(false)}
+        />
+        <label>Não preemptivo</label>  
+      </div>
 
-        <div className="flex gap-2 items-center">
-        <input type="radio" {...register('systemsType', { required: true })} onChange={() => setIsPreemptive(true)} className="radio radio-primary" />
-          <label className="label cursor-pointer">
-            Preemptivo
-          </label>
-        </div>
+      <div className="flex gap-2 items-center">
+        <input 
+          type="radio"
+          className='radio'
+          {...field}
+          value={1}
+          onChange={() => setIsPreemptive(true)}
+        />
+        <label>Preemptivo</label>
+      </div>
+        
         <select
           disabled={!!activeProcess}
           value={selectedAlgorithm}

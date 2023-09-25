@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CreateProcess from './components/CreateProcess';
 import { ICycle, IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
-import { Plus, Cpu, Play, Info, Broom } from '@phosphor-icons/react';
+import { Plus, Cpu, Play, Info, Broom, ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import { CycleState, NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
 import Quantum from './components/Quantum';
@@ -12,6 +12,7 @@ import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
 import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
 import { changeActiveProcess } from '@/helper/changeActiveProcessHelper';
+import { generateRandomProcesses } from '@/helper/generateRandomProcesses';
 
 export default function Process() {
   const {
@@ -35,7 +36,24 @@ export default function Process() {
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
+  const [arrow, setArrow] = useState<boolean>(false);
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
+  const [processesQuantity, setProcessesQuantity] = useState<number>(1);
+
+  console.log('isPreemptive: ', isPreemptive)
+
+  const handleCreateMultipleProcesses = () => {
+    generateRandomProcesses(
+      setProcesses,
+      activeCycle,
+      setActiveCycle,
+      setCycles,
+      activeProcess,
+      isPreemptive,
+      processesQuantity
+    )
+    setProcessesQuantity(1)
+  }
 
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
@@ -134,13 +152,31 @@ export default function Process() {
       <div className="flex flex-col gap-4 items-center p-2">
         <div className="w-full flex flex-col gap-2 items-start md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2 md:flex-row">
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowModal(!showModal)}
-              disabled={false}
-            >
-              Processo <Plus size={32} />
-            </button>
+          <details className="dropdown mb-32">
+            <summary className="btn btn-primary" onClick={() => setArrow(!arrow)}>Processo 
+            {!arrow ? <ArrowDown size={32} /> : <ArrowUp size={32} />}
+            </summary>
+            <ul className="p-2 shadow menu  dropdown-content z-[1] bg-base-100 rounded-box w-52">
+              <li
+                onClick={() => setShowModal(!showModal)}
+              >
+                <a>único</a>
+              </li>
+
+              <li className='flex border-2 gap-2' >
+                <a onClick={handleCreateMultipleProcesses}>multíplos</a>
+              <div>
+                <input 
+                  type="range" 
+                  min={1} max="15" 
+                  onChange={(e) => setProcessesQuantity(Number(e.target.value))} 
+                  value={processesQuantity} 
+                  className="range range-primary" />
+                <span>{processesQuantity}</span>
+              </div>
+              </li>
+            </ul>
+          </details>
 
             <button
               className="btn btn-primary"

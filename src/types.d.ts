@@ -32,11 +32,11 @@ interface IProcessesContext {
   activeProcess: IProcess | null;
   setActiveProcess: Dispatch<SetStateAction<IProcess | null>>;
   currentAlgorithm: EscalationAlgorithm | undefined;
-  setCurrentAlgorithm: Dispatch<SetStateAction<EscalationAlgorithm | undefined>>;
+  setCurrentAlgorithm: Dispatch<SetStateAction<EscalationAlgorithm>>;
   cycles: ICycle[];
   setCycles: Dispatch<SetStateAction<ICycle[]>>;
   activeCycle: ICycle | undefined;
-  setActiveCycle: Dispatch<SetStateAction<ICycle | undefined>>;
+  setActiveCycle: Dispatch<SetStateAction<ICycle>>;
   isPreemptive: boolean;
   setIsPreemptive: Dispatch<SetStateAction<boolean>>;
   count: number;
