@@ -9,7 +9,8 @@ import {
 } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
-import React from 'react';
+import { color } from 'framer-motion';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 type CreateProcessProps = {
@@ -26,6 +27,7 @@ export default function CreateProcess({
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -37,6 +39,8 @@ export default function CreateProcess({
     isPreemptive, 
     activeProcess
   } = useProcessesContext();
+
+  const selectedColor = watch('color')
 
   const onSubmit: any = (data: IProcess) => {
     const newProcess: IProcess = {
@@ -129,7 +133,7 @@ export default function CreateProcess({
                 <label htmlFor="runningTime">Tempo de execução (seg)</label>
                 <input
                   type="number"
-                  defaultValue={25}
+                  defaultValue={10}
                   min={1}
                   max={50}
                   placeholder="Tempo de execução"
@@ -145,6 +149,7 @@ export default function CreateProcess({
               <label htmlFor="color">Cor</label>
               <select
                 className="select select-info w-full max-w-xs"
+                // style={{ backgroundColor: selectedColor}}
                 {...register('color', { required: true })}
               >
                 <option disabled>Selecione a cor</option>
@@ -152,6 +157,7 @@ export default function CreateProcess({
                   <option
                     key={index}
                     value={colors[color as keyof typeof colors]}
+                    style={{ backgroundColor: colors[color as keyof typeof colors]}}
                   >
                     {color}
                   </option>

@@ -47,41 +47,4 @@ export function UpdateActiveCycleHelper(
     return updatedCycles;
   });
 }
-
-  // setProcesses((prevProcesses: IProcess[]) => {
-
-  //       const updatedProcesses = prevProcesses.map((process) => {
-  //         const timeLimit =
-  //           cycle.algorithm === EscalationAlgorithm.RR
-  //             ? quantum
-  //             : process?.runningTime;
-
-  //         if (process?.id === activeProcess?.id) {
-  //           if (Math.ceil(process?.cpuUsageTime + 1) >= timeLimit!) {
-  //             process.state = ProcessState.Finished;
-  //           }
-
-  //           return {
-  //             ...process,
-  //             cpuUsageTime: Math.ceil(process.cpuUsageTime + 1),
-  //           };
-  //         } else {
-  //           return {
-  //             ...process,
-  //             waitingTime: Math.ceil(process.waitingTime + 1),
-  //           };
-  //         }
-  //       });
-
-  //       return {
-  //         ...cycle,
-  //         cycleProcesses: updatedCycleProcesses,
-  //       };
-  //     } else {
-  //       return cycle;
-  //     }
-  //   });
-
-  //   return updatedCycles;
-  // });
 }

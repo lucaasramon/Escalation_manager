@@ -1,4 +1,4 @@
-import { PreemptiveEscalationAlgorithm, ProcessState } from "@/enums";
+import { NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm, ProcessState } from "@/enums";
 import { shouldUpdateIndexHelper } from "./shouldUpdateIndexHelper";
 import { ICycle, IProcess } from "@/types";
 import { Dispatch, SetStateAction } from "react";
@@ -29,6 +29,7 @@ export const updateActiveProcessHelper = (
           )
     
           if (shouldUpdateIndex) {
+            console.log('ESTA CAINDO AQUI')
             process.state = ProcessState.Ready;
             setActiveProcess(prev => ({...prev, state: ProcessState.Ready}))
             setProcessIndex(prev => prev + 1) 
@@ -44,9 +45,11 @@ export const updateActiveProcessHelper = (
             process.state = ProcessState.Finished;
             setActiveProcess({...activeProcess, state: ProcessState.Finished})
 
-            if(cycle.algorithm !== PreemptiveEscalationAlgorithm.RR){
+            if(cycle.algorithm  === typeof(NonPreemptiveEscalationAlgorithm)){
+              console.log('É um algoritmo não preemptivo')
               setProcessIndex((prev) => prev + 1)
             }
+            console.log('É um algoritmo preemptivo')
           }
 
           return {

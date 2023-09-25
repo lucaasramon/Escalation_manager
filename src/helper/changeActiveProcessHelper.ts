@@ -13,6 +13,7 @@ export const changeActiveProcess = (
 ) => {
 
     setActiveProcess(null);
+    console.log('processIndex: ', processIndex)
     
     if (processIndex >= sortedProcesses.length) {      
       setProcessIndex(0)
@@ -27,6 +28,7 @@ export const changeActiveProcess = (
           });
         });
       }
+      
       else{
         setCycles((prevCycles: ICycle[]) => {
             return prevCycles.map((cycle) => {

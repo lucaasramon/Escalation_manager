@@ -30,7 +30,7 @@ export default function Process() {
     processIndex, 
     setProcessIndex,
     quantum,
-    setQuantum
+    setQuantum,
   } = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -60,15 +60,6 @@ export default function Process() {
       }),
     );
   }, [currentAlgorithm]);
-
-  // useEffect para ordenar os processos
-  // useEffect(() => {
-  //   if(activeCycle) {
-  //     let sortedProcesses  = sortProcessesHelper(currentAlgorithm, activeCycle)
-  //     setSortedProcesses(sortedProcesses)
-  //   }
-
-  // }, [activeCycle?.cycleProcesses, cycles, processes])
 
   // useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
@@ -100,7 +91,7 @@ export default function Process() {
   // useEffect para ordenar e alternar os processos na cpu
   useEffect(() => {
     if (activeCycle?.status === CycleState.Active) {
-      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
+      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle, setProcessIndex)
       setSortedProcesses(sortedProcesses)
       changeActiveProcess(
         processIndex, 
@@ -113,7 +104,7 @@ export default function Process() {
         setActiveCycle
       );
     }
-  }, [activeCycle, cycles, activeProcess?.state]);
+  }, [activeCycle, activeCycle?.cycleProcesses, cycles, activeProcess?.state]);
 
   const handlePlay = () => {
     const newProcesses = processes.map((process) => ({
@@ -133,6 +124,7 @@ export default function Process() {
       isPreemptive: isPreemptive
     };
 
+    setProcessIndex(0)
     setActiveCycle(newCycle);
     setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
   };
