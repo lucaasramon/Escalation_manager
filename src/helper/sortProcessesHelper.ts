@@ -8,7 +8,6 @@ import { Dispatch, SetStateAction } from "react";
 export const sortProcessesHelper = (
     currentAlgorithm: NonPreemptiveEscalationAlgorithm | PreemptiveEscalationAlgorithm, 
     activeCycle: ICycle,
-    setProcessIndex:  Dispatch<SetStateAction<number>>
     ) => {
     
     let sortedProcesses: IProcess[] = []
@@ -19,19 +18,10 @@ export const sortProcessesHelper = (
         sortedProcesses = sortBySjf(activeCycle?.cycleProcesses);
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.Priority) {
         sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
-        sortedProcesses = sortedProcesses.filter((process) => {
-            if(process.state !== ProcessState.Finished) {
-                return process
-            }
-        })
+        sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.RR) {
         sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
-        sortedProcesses = sortedProcesses.filter((process) => {
-            if(process.state !== ProcessState.Finished) {
-                return process
-            }
-        })
+        sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
     }
-    
     return sortedProcesses
 }

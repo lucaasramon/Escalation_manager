@@ -11,45 +11,64 @@ export const updateActiveProcessHelper = (
     setProcessIndex: React.Dispatch<React.SetStateAction<number>>,
     count: number,
     setCount: React.Dispatch<React.SetStateAction<number>>,
-    quantum: any,  
+    quantum: number,  
     ) => {
 
     const updatedProcesses  = cycle?.cycleProcesses?.map((process) => {
-        const timeLimit = process?.runningTime;
+      if (process.state === ProcessState.Finished) {
+        return process
+      }
 
+      else{
         if (process?.id === activeProcess?.id) {
 
-          process.state = ProcessState.Running
-          setCount(prev => prev + 1)
-
-          const shouldUpdateIndex = shouldUpdateIndexHelper(
-            activeCycle,
-            count,
-            quantum
-          )
-    
-          if (shouldUpdateIndex) {
-            console.log('ESTA CAINDO AQUI')
-            process.state = ProcessState.Ready;
-            setActiveProcess(prev => ({...prev, state: ProcessState.Ready}))
-            setProcessIndex(prev => prev + 1) 
-            setCount(1)
-          }
+          console.log(`PROCESS: ${process.id} - UT: ${process.cpuUsageTime}`)
+          
+          const timeLimit = process?.runningTime;
 
           setActiveProcess({...activeProcess, 
             cpuUsageTime: activeProcess.cpuUsageTime + 1, 
             state: ProcessState.Running
           })
-
+            
           if (Math.ceil(process?.cpuUsageTime + 1) >= timeLimit) {
-            process.state = ProcessState.Finished;
-            setActiveProcess({...activeProcess, state: ProcessState.Finished})
+            setActiveProcess({...activeProcess, 
+              state: ProcessState.Finished, 
+              cpuUsageTime: activeProcess.cpuUsageTime + 1})
 
-            if(cycle.algorithm  === NonPreemptiveEscalationAlgorithm.FIFO || NonPreemptiveEscalationAlgorithm.SJF){
-              console.log('É um algoritmo não preemptivo')
+
+            if(cycle.algorithm === PreemptiveEscalationAlgorithm.RR){
+              setCount(1)
+            }else{
               setProcessIndex((prev) => prev + 1)
             }
-            console.log('É um algoritmo preemptivo')
+            
+            return {
+              ...process, 
+              state: ProcessState.Finished, 
+              cpuUsageTime: Math.ceil(process.cpuUsageTime + 1),
+            }
+          }
+
+          if(cycle.algorithm === PreemptiveEscalationAlgorithm.RR && 
+            Math.ceil(process?.cpuUsageTime + 1) < timeLimit){
+            setCount(prev => prev + 1)
+            
+            const shouldUpdateIndex = shouldUpdateIndexHelper( 
+              count,
+              quantum,
+            )
+
+            if (shouldUpdateIndex ) {
+                setActiveProcess(prev => ({...prev, state: ProcessState.Ready}))
+                setProcessIndex(prev => prev + 1) 
+                setCount(1)
+                return {
+                  ...process, 
+                  state: ProcessState.Ready,
+                  cpuUsageTime: process.cpuUsageTime + 1
+                }
+            }
           }
 
           return {
@@ -58,15 +77,12 @@ export const updateActiveProcessHelper = (
           };
         } 
         else {
-
-          if(process.state !== ProcessState.Finished){ 
             return {
               ...process,
               waitingTime: Math.ceil(process.waitingTime + 1),
             };
           }
-          return process
-        }
+      }
       });
     return updatedProcesses
 }

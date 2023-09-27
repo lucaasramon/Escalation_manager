@@ -40,7 +40,7 @@ export default function Process() {
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
   const [processesQuantity, setProcessesQuantity] = useState<number>(1);
 
-  console.log('isPreemptive: ', isPreemptive)
+  console.log('sortedProcesses: ', sortedProcesses)
 
   const handleCreateMultipleProcesses = () => {
     generateRandomProcesses(
@@ -62,8 +62,6 @@ export default function Process() {
   const wipeProcesses = () => {
     setProcesses([]);
   };
-
-  console.log('sortedProcesses: ', sortedProcesses)
 
   // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
@@ -99,7 +97,7 @@ export default function Process() {
           sortedProcesses,
         );
 
-      }, 950);
+      }, 1000);
       return () => {
         clearInterval(intervalId);
       };
@@ -108,10 +106,12 @@ export default function Process() {
 
   // useEffect para ordenar e alternar os processos na cpu
   useEffect(() => {
+
     if (activeCycle?.status === CycleState.Active) {
-      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle, setProcessIndex)
+      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
       setSortedProcesses(sortedProcesses)
       changeActiveProcess(
+        activeProcess,
         processIndex, 
         setActiveProcess, 
         sortedProcesses, 
@@ -122,7 +122,7 @@ export default function Process() {
         setActiveCycle
       );
     }
-  }, [activeCycle, activeCycle?.cycleProcesses, cycles, activeProcess?.state]);
+  }, [activeCycle, activeCycle?.cycleProcesses, processIndex]);
 
   const handlePlay = () => {
     const newProcesses = processes.map((process) => ({
@@ -149,31 +149,32 @@ export default function Process() {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 items-center p-2">
+      <div className="flex flex-col gap-8 items-center p-2">
         <div className="w-full flex flex-col gap-2 items-start md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2 md:flex-row">
           <details className="dropdown mb-32">
             <summary className="btn btn-primary" onClick={() => setArrow(!arrow)}>Processo 
             {!arrow ? <ArrowDown size={32} /> : <ArrowUp size={32} />}
             </summary>
-            <ul className="p-2 shadow menu  dropdown-content z-[1] bg-base-100 rounded-box w-52">
+            <ul className="p-2 shadow menu  dropdown-content z-[1] bg-base-100 rounded-box w-52 gap-2">
               <li
                 onClick={() => setShowModal(!showModal)}
+                className='border rounded border-blue-600'
               >
-                <a>único</a>
+                <a>Criar único</a>
               </li>
 
-              <li className='flex border-2 gap-2' >
-                <a onClick={handleCreateMultipleProcesses}>multíplos</a>
-              <div>
-                <input 
-                  type="range" 
-                  min={1} max="15" 
-                  onChange={(e) => setProcessesQuantity(Number(e.target.value))} 
-                  value={processesQuantity} 
-                  className="range range-primary" />
-                <span>{processesQuantity}</span>
-              </div>
+              <li className='flex gap-2'>
+                <a onClick={handleCreateMultipleProcesses} className='border bg-white rounded border-blue-600'>Criar multíplos</a>
+                <div>
+                  <input 
+                    type="range" 
+                    min={1} max="15" 
+                    onChange={(e) => setProcessesQuantity(Number(e.target.value))} 
+                    value={processesQuantity} 
+                    className="range range-primary" />
+                  <span>{processesQuantity}</span>
+                </div>
               </li>
             </ul>
           </details>

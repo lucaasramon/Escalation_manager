@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, Controller, useController } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import { PreemptiveEscalationAlgorithm, NonPreemptiveEscalationAlgorithm } from '@/enums';
 import { useProcessesContext } from '@/context/context';
 
@@ -7,27 +7,19 @@ export default function SelectEscalationAlgorithm() {
   const {
     register,
     watch,
-    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      cycleType: 0,
+      cycleType: 'nonPreemptive',
       algorithm: '',
       color: ''
     }
   });
-
+  
   const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive} = useProcessesContext();
 
-  const { field } = useController({
-    name: "cycleType", 
-    control,
-    rules: {
-      validate: (value) => value === 0 || value === 1
-    },
-  });
-
   const selectedAlgorithm = watch('algorithm', '');
+  const selectedCycleType = watch('cycleType')
 
   const EscalationAlgorithms = [
     {name: 'Prioridade', value: PreemptiveEscalationAlgorithm.Priority, isPreemptive: true},
@@ -49,22 +41,22 @@ export default function SelectEscalationAlgorithm() {
         
       <div className="flex gap-2 items-center">
         <input
+          {...register('cycleType')}
           type="radio"  
           className='radio'
-          {...field} 
-          value={0}
-          onChange={() => setIsPreemptive(false)}
+          value={'nonPreemptive'}
+          onChange={() =>  setIsPreemptive(false)}
         />
         <label>Não preemptivo</label>  
       </div>
 
       <div className="flex gap-2 items-center">
         <input 
+          {...register('cycleType')}
           type="radio"
           className='radio'
-          {...field}
-          value={1}
-          onChange={() => setIsPreemptive(true)}
+          value={'preemptive'}
+          onChange={() =>  setIsPreemptive(true)}
         />
         <label>Preemptivo</label>
       </div>

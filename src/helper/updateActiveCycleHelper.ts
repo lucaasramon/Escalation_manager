@@ -9,11 +9,11 @@ export function UpdateActiveCycleHelper(
   activeCycle: ICycle,
   setProcesses: Dispatch<SetStateAction<IProcess[]>>,
   setActiveProcess: Dispatch<SetStateAction<IProcess>>,
-  processIndex: any,
+  processIndex: number,
   setProcessIndex: React.Dispatch<React.SetStateAction<number>>,
   count: number,
   setCount: React.Dispatch<React.SetStateAction<number>>,
-  quantum: any, 
+  quantum: number, 
   sortedProcesses: IProcess[],
 ) {
   if(activeCycle){
@@ -29,7 +29,7 @@ export function UpdateActiveCycleHelper(
             setProcessIndex,
             count,
             setCount,
-            quantum
+            quantum,
           );
 
           setProcesses(updatedCycleProcesses);
