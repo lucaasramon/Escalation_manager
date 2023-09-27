@@ -22,8 +22,6 @@ export const updateActiveProcessHelper = (
       else{
         if (process?.id === activeProcess?.id) {
 
-          console.log(`PROCESS: ${process.id} - UT: ${process.cpuUsageTime}`)
-          
           const timeLimit = process?.runningTime;
 
           setActiveProcess({...activeProcess, 
@@ -37,8 +35,11 @@ export const updateActiveProcessHelper = (
               cpuUsageTime: activeProcess.cpuUsageTime + 1})
 
 
-            if(cycle.algorithm === PreemptiveEscalationAlgorithm.RR){
-              setCount(1)
+            if(cycle.algorithm === PreemptiveEscalationAlgorithm.RR || 
+              cycle.algorithm === PreemptiveEscalationAlgorithm.Priority){
+                if(cycle.algorithm === PreemptiveEscalationAlgorithm.RR){
+                  setCount(1)
+                }
             }else{
               setProcessIndex((prev) => prev + 1)
             }

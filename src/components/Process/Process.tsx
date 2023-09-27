@@ -40,8 +40,6 @@ export default function Process() {
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
   const [processesQuantity, setProcessesQuantity] = useState<number>(1);
 
-  console.log('sortedProcesses: ', sortedProcesses)
-
   const handleCreateMultipleProcesses = () => {
     generateRandomProcesses(
       setProcesses,
