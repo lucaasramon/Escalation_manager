@@ -237,16 +237,16 @@ export default function CreateProcess({
               </div>
             </div>
                   
-            <div className='flex gap-6 w-full'>
-              <button type="submit" className="btn btn-success max-w-[250px] w-full">
-                Criar
-              </button>
-
+            <div className='flex flex-col items-center justify-center gap-6 w-full'>
               <div className='flex gap-3 items-center'>
                 <span className='btn font-bold' onClick={handleDecreaseQuantity}> <Minus style={{color: 'red'}}/></span>
                 {processesQuantity}
                 <span className='btn font-bold' onClick={() => setProcessesQuantity(prev => prev + 1)}> <Plus style={{color: 'green'}}/></span>
               </div>
+
+              <button type="submit" className="btn btn-success max-w-[250px] w-full">
+                Criar
+              </button>
             </div>
            
           </form>
@@ -273,7 +273,6 @@ export default function CreateProcess({
               <button type="submit" className="btn btn-success max-w-xs w-full">
                 Criar
               </button>
-
             </form>
           )}
       </div>
