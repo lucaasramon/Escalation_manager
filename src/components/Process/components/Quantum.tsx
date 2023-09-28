@@ -13,7 +13,7 @@ export default function Quantum({ setQuantum, quantum }: QuantumProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="quantum">Fatia de tempo (quantum)</label>
+      <label htmlFor="quantum">Quantum</label>
       <input
         type="number"
         defaultValue={quantum}

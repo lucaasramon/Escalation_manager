@@ -12,7 +12,7 @@ import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
 import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
 import { changeActiveProcess } from '@/helper/changeActiveProcessHelper';
-import { generateRandomProcesses } from '@/helper/generateRandomProcesses';
+import ProcessCreation from './components/ProcessCreation';
 
 export default function Process() {
   const {
@@ -34,25 +34,9 @@ export default function Process() {
     setQuantum,
   } = useProcessesContext();
 
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
-  const [arrow, setArrow] = useState<boolean>(false);
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
-  const [processesQuantity, setProcessesQuantity] = useState<number>(1);
-
-  const handleCreateMultipleProcesses = () => {
-    generateRandomProcesses(
-      setProcesses,
-      activeCycle,
-      setActiveCycle,
-      setCycles,
-      activeProcess,
-      isPreemptive,
-      processesQuantity
-    )
-    setProcessesQuantity(1)
-  }
-
+  
   const toggleShowStatistics = () => {
     setShowStatistics((prevShowStatistics) => !prevShowStatistics);
   };
@@ -147,77 +131,54 @@ export default function Process() {
 
   return (
     <div>
-      <div className="flex flex-col gap-8 items-center p-2">
-        <div className="w-full flex flex-col gap-2 items-start md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-2 md:flex-row">
-          <details className="dropdown mb-32">
-            <summary className="btn btn-primary" onClick={() => setArrow(!arrow)}>Processo 
-            {!arrow ? <ArrowDown size={32} /> : <ArrowUp size={32} />}
-            </summary>
-            <ul className="p-2 shadow menu  dropdown-content z-[1] bg-base-100 rounded-box w-52 gap-2">
-              <li
-                onClick={() => setShowModal(!showModal)}
-                className='border rounded border-blue-600'
-              >
-                <a>Criar único</a>
-              </li>
+      <div className="grid grid-cols-1 grid-rows-2 flex-col gap-8 items-center p-2 md:flex">
+        <div className="w-full grid grid-cols-2 gap-2 items-start md:flex-row md:items-start md:justify-between p-2">
+          <div className='flex flex-col gap-2 items-center w-full h-full'>
+            <ProcessCreation/>
+            <div className="flex gap-2 items-center justify-center relative">
+                <div className="flex flex-col gap-2 justify-start items-start max-w-[150px]">
+                  <SelectEscalationAlgorithm/>
 
-              <li className='flex gap-2'>
-                <a onClick={handleCreateMultipleProcesses} className='border bg-white rounded border-blue-600'>Criar multíplos</a>
-                <div>
-                  <input 
-                    type="range" 
-                    min={1} max="15" 
-                    onChange={(e) => setProcessesQuantity(Number(e.target.value))} 
-                    value={processesQuantity} 
-                    className="range range-primary" />
-                  <span>{processesQuantity}</span>
+                  <div className='absolute bottom-[-250px]'>
+                    {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && isPreemptive && (
+                      <Quantum setQuantum={setQuantum} quantum={quantum} />
+                    )}
+                  </div>
+                  
                 </div>
-              </li>
-            </ul>
-          </details>
+            </div>
+          </div>
+
+          <div className='h-full flex flex-col items-center gap-2 justify-center'>
+            <button
+              onClick={handlePlay}
+              className="btn btn-primary max-w-[150px] w-full"
+              disabled={processes.length === 0}
+            >
+              Iniciar <Play size={28} />
+            </button>
 
             <button
-              className="btn btn-primary"
-              onClick={wipeProcesses}
-              disabled={processes.length === 0 || !!activeProcess}
-            >
-              Limpar <Broom size={32} />
-            </button>
-          </div>
+                className="btn btn-primary max-w-[150px] w-full"
+                onClick={wipeProcesses}
+                disabled={processes.length === 0 || !!activeProcess}
+              >
+                Limpar <Broom size={28} />
+              </button>
 
-          <button
-            onClick={handlePlay}
-            className="btn btn-primary"
-            disabled={processes.length === 0}
-          >
-            <Play size={32} />
-          </button>
-        </div>
-
-        <div className="flex gap-2 justify-between items-center w-full">
-          <div className="flex flex-col gap-2 justify-start items-start">
-            <SelectEscalationAlgorithm/>
-
-            {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && (
-              <Quantum setQuantum={setQuantum} quantum={quantum} />
-            )}
-          </div>
-
-          {cycles && (
-            <div>
+            {cycles && (
               <button
                 onClick={toggleShowStatistics}
-                className="btn btn-primary"
+                className="btn btn-primary max-w-[150px] w-full" 
                 disabled={cycles.length === 0}
               >
-                <Info size={32} />
+                Detalhes<Info size={28} />
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center flex-col gap-2 p-4 shadow-lg rounded-lg h-[200px] w-[200px]">
+        <div className="flex items-center flex-col gap-2 p-4 shadow-lg rounded-lg h-[200px] w-full">
           <Cpu
             size={40}
             className={`${activeProcess ? 'animate-ping text-red-500' : ''}`}
@@ -240,14 +201,6 @@ export default function Process() {
           )}
         </div>
       </div>
-
-      {showModal && (
-        <CreateProcess
-          setShowModal={setShowModal}
-          showModal={showModal}
-          quantum={quantum}
-        />
-      )}
 
       {showStatistics && (
         <CyclesStatistics

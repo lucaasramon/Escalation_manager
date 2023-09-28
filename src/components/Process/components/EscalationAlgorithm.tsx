@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { PreemptiveEscalationAlgorithm, NonPreemptiveEscalationAlgorithm } from '@/enums';
 import { useProcessesContext } from '@/context/context';
+import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 
 export default function SelectEscalationAlgorithm() {
   const {
@@ -17,6 +18,7 @@ export default function SelectEscalationAlgorithm() {
   });
   
   const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive} = useProcessesContext();
+  const [arrow, setArrow] = useState<boolean>(false);
 
   const selectedAlgorithm = watch('algorithm', '');
   const selectedCycleType = watch('cycleType')
@@ -33,12 +35,13 @@ export default function SelectEscalationAlgorithm() {
   }, [selectedAlgorithm, setCurrentAlgorithm]);
 
   return (
-    <details className="collapse bg-base-200">
-  <summary className="collapse-title text-xl font-medium">Algoritimos de escalonamento</summary>
-  <div className="collapse-content"> 
-  <form className="flex flex-col items-center gap-4 max-w-[500px]">
+  <details className="dropdown bg-base-200">
+    <summary className="btn btn-primary text-[10px] flex-nowrap max-w-[150px]" onClick={() => setArrow(!arrow)}>Configuração
+    {!arrow ? <ArrowDown size={28} /> : <ArrowUp size={28} />}
+    </summary>
+    <div className="p-2 shadow menu mt-2 dropdown-content z-[1] bg-base-100 rounded-box max-w-[200px] w-full gap-2"> 
+    <form className="flex flex-col items-center gap-4 max-w-[500px]">
       <div className="flex flex-col gap-2">
-        
       <div className="flex gap-2 items-center">
         <input
           {...register('cycleType')}
