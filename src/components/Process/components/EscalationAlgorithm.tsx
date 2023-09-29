@@ -35,8 +35,6 @@ export default function SelectEscalationAlgorithm() {
     setCurrentAlgorithm(selectedAlgorithm);
   }, [selectedAlgorithm, setCurrentAlgorithm]);
 
-  console.log(showModal)
-
   return (
  
   <div>

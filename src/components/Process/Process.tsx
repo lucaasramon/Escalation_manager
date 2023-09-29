@@ -13,6 +13,8 @@ import { useProcessesContext } from '@/context/context';
 import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
 import { changeActiveProcess } from '@/helper/changeActiveProcessHelper';
 import ProcessCreation from './components/ProcessCreation';
+import ActionButtons from './components/ActionButtons';
+import CpuComponent from './components/CpuComponent';
 
 export default function Process() {
   const {
@@ -34,16 +36,8 @@ export default function Process() {
     setQuantum,
   } = useProcessesContext();
 
-  const [showStatistics, setShowStatistics] = useState<boolean>(false);
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
   
-  const toggleShowStatistics = () => {
-    setShowStatistics((prevShowStatistics) => !prevShowStatistics);
-  };
-
-  const wipeProcesses = () => {
-    setProcesses([]);
-  };
 
   // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
@@ -106,102 +100,24 @@ export default function Process() {
     }
   }, [activeCycle, activeCycle?.cycleProcesses, processIndex]);
 
-  const handlePlay = () => {
-    const newProcesses = processes.map((process) => ({
-      ...process,
-      cpuUsageTime: 0,
-      waitingTime: 0,
-      state: ProcessState.Ready,
-    }));
-
-    setProcesses(newProcesses);
-
-    const newCycle: ICycle = {
-      id: cycles.length + 1,
-      algorithm: currentAlgorithm,
-      cycleProcesses: newProcesses,
-      status: CycleState.Active,
-      isPreemptive: isPreemptive
-    };
-
-    setProcessIndex(0)
-    setActiveCycle(newCycle);
-    setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
-  };
-
   return (
-    <div>
-      <div className="grid grid-cols-1 grid-rows-2 flex-col gap-8 items-center p-2 md:flex">
-        <div className="w-full grid grid-cols-2 gap-2 items-start md:flex-row md:items-start md:justify-between p-2">
-          <div className='flex flex-col gap-2 items-center h-full'>
+    <div className="p-4 w-full grid grid-rows-2 sm:grid-cols-1 sm:grid-rows-1 gap-2 items-start md:flex-row md:items-start md:justify-between">
+      <div className='flex gap-2 items-center justify-between h-full max-h-[200px]'>
+        <div className="flex flex-col  h-full gap-2 items-center justify-start">
             <ProcessCreation/>
-            <div className="flex gap-2 items-center justify-center relative">
-                <div className="flex flex-col gap-2 justify-start items-start max-w-[150px] w-full border-red-500">
-                  <SelectEscalationAlgorithm/>                  
-                </div>
-            </div>
-          </div>
-
-          <div className='h-full flex flex-col items-end gap-2 justify-center'>
-            <button
-              onClick={handlePlay}
-              className="btn btn-primary max-w-[50px] w-full"
-              disabled={processes.length === 0}
-            >
-               <Play size={28} />
-            </button>
-
-            <button
-                className="btn btn-primary max-w-[50px] w-full"
-                onClick={wipeProcesses}
-                disabled={processes.length === 0 || !!activeProcess}
-              >
-                 <Broom size={28} />
-              </button>
-
-            {cycles && (
-              <button
-                onClick={toggleShowStatistics}
-                className="btn btn-primary max-w-[50px] w-full" 
-                disabled={cycles.length === 0}
-              >
-                <Info size={28} />
-              </button>
-            )}
-          </div>
+            <SelectEscalationAlgorithm/>                  
         </div>
 
-        <div className="flex items-center flex-col gap-2 p-4 shadow-lg rounded-lg h-[200px] w-full">
-          <Cpu
-            size={40}
-            className={`${activeProcess ? 'animate-ping text-red-500' : ''}`}
-          />
-
-          {activeProcess && (
-            <div className="flex flex-col p-4 items-center">
-              <div className="flex p-2 gap-2 items-center">
-                <h2 className="text-green-500 italic">Executando...</h2>
-              </div>
-
-              <div className="flex gap-1 items-center">
-                <span
-                  style={{ backgroundColor: activeProcess?.color }}
-                  className={`rounded-full h-2 w-2 inline-block`}
-                />
-                <span>{activeProcess?.id}</span>
-              </div>
-            </div>
-          )}
+        <div className='hidden sm:block max-w-[350px] w-full'>
+          <CpuComponent/>
         </div>
+
+          <ActionButtons/>
       </div>
 
-      {showStatistics && (
-        <CyclesStatistics
-          cycles={cycles}
-          showStatistics={toggleShowStatistics}
-          quantum={quantum}
-        />
-      )}
+      <div className='block sm:hidden'>
+        <CpuComponent/>
+      </div>
 
       <ProcessTable quantum={quantum} />
     </div>

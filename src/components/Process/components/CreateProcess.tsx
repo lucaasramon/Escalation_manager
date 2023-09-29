@@ -55,9 +55,15 @@ export default function CreateProcess({
     }
   }
 
+  const handleIncreaseQuantity = () => {
+    if(processesQuantity >= 15) {
+      return
+    }else{
+      setProcessesQuantity(prev => prev + 1)
+    }
+  }
+
   const onSubmit: any = (data: IProcess, processCreationType: ProcessCreationType = ProcessCreationType.parametized) => {
-    console.log(processCreationType)
-    console.log(data)
     if(processCreationType === ProcessCreationType.parametized) {
 
       const newProcess: IProcess = {
@@ -241,7 +247,7 @@ export default function CreateProcess({
               <div className='flex gap-3 items-center'>
                 <span className='btn font-bold' onClick={handleDecreaseQuantity}> <Minus style={{color: 'red'}}/></span>
                 {processesQuantity}
-                <span className='btn font-bold' onClick={() => setProcessesQuantity(prev => prev + 1)}> <Plus style={{color: 'green'}}/></span>
+                <span className='btn font-bold' onClick={handleIncreaseQuantity}> <Plus style={{color: 'green'}}/></span>
               </div>
 
               <button type="submit" className="btn btn-success max-w-[250px] w-full">
@@ -263,7 +269,8 @@ export default function CreateProcess({
 
                 <input 
                     type="range" 
-                    min={1} max="15" 
+                    min={1} 
+                    max={15}
                     onChange={(e) => setProcessesQuantity(Number(e.target.value))} 
                     value={processesQuantity} 
                     className="range range-primary" 
