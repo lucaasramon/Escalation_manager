@@ -57,9 +57,9 @@ export default function ActionButtons({}: Props) {
   return (
     <div className='h-full flex flex-col items-start gap-2 justify-start'>
         <button
-        onClick={handlePlay}
-        className="btn btn-primary max-w-[50px] w-full md:max-w-[150px]"
-        disabled={processes.length === 0}
+            onClick={handlePlay}
+            className="btn btn-primary max-w-[50px] w-full md:max-w-[150px]"
+            disabled={processes.length === 0 || !currentAlgorithm}
         >
             <Play size={28} /> 
             <span className='hidden md:block'>Iniciar</span>
