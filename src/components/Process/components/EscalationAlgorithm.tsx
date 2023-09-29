@@ -13,7 +13,7 @@ export default function SelectEscalationAlgorithm() {
   } = useForm({
     defaultValues: {
       cycleType: 'nonPreemptive',
-      algorithm: '',
+      algorithm: 'Selecione o algoritmo',
       color: ''
     }
   });
@@ -21,8 +21,7 @@ export default function SelectEscalationAlgorithm() {
   const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive, quantum, setQuantum, currentAlgorithm} = useProcessesContext();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const selectedAlgorithm = watch('algorithm', '');
-  const selectedCycleType = watch('cycleType')
+  const selectedAlgorithm = watch('algorithm', 'Selecione o algoritmo');
 
   const EscalationAlgorithms = [
     {name: 'Prioridade', value: PreemptiveEscalationAlgorithm.Priority, isPreemptive: true},
@@ -75,31 +74,32 @@ export default function SelectEscalationAlgorithm() {
              </div>
              
              <span className='font-bold underline'>Algoritmo de escalonamento</span>
-             <select
-               disabled={!!activeProcess}
-               value={selectedAlgorithm}
-               className="select select-info w-full max-w-xs"
-               {...register('algorithm', { required: true })}
-             >
-               <option hidden className="text-gray-600">
-                 Selecione o tipo de algoritmo
-               </option>
- 
-               {isPreemptive ? EscalationAlgorithms.filter((algorithm) => algorithm.isPreemptive).map((algorithm, index) => (
-                 <option value={algorithm.value} key={index}>
-                   {algorithm.name}
-                 </option>
-               )) : 
-               EscalationAlgorithms.filter((algorithm) => !algorithm.isPreemptive).map((algorithm, index) => (
-                 <option value={algorithm.value} key={index}>
-                   {algorithm.name}
-                 </option>))
-               }
-               
-             </select>
-             {errors.color && (
-               <span className="ml-2 text-red-500">Campo obrigatório</span>
-             )}
+              <select
+                disabled={!!activeProcess}
+                value={selectedAlgorithm}
+                defaultValue={'Não selecionado pai'}
+                className="select select-info w-full max-w-xs"
+                {...register('algorithm', { required: true })}
+              >
+                 <option hidden className="text-gray-600" value={'Selecione o algoritmo'}>
+                  Selecione o algoritmo
+                </option>
+    
+                {isPreemptive ? EscalationAlgorithms.filter((algorithm) => algorithm.isPreemptive).map((algorithm, index) => (
+                  <option value={algorithm.value} key={index}>
+                    {algorithm.name}
+                  </option>
+                )) : 
+                EscalationAlgorithms.filter((algorithm) => !algorithm.isPreemptive).map((algorithm, index) => (
+                  <option value={algorithm.value} key={index}>
+                    {algorithm.name}
+                  </option>))
+                }
+                
+              </select>
+              {errors.color && (
+                <span className="ml-2 text-red-500">Campo obrigatório</span>
+              )}
            </div>
          </form>
  
