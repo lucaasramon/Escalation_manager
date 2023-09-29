@@ -133,46 +133,39 @@ export default function Process() {
     <div>
       <div className="grid grid-cols-1 grid-rows-2 flex-col gap-8 items-center p-2 md:flex">
         <div className="w-full grid grid-cols-2 gap-2 items-start md:flex-row md:items-start md:justify-between p-2">
-          <div className='flex flex-col gap-2 items-center w-full h-full'>
+          <div className='flex flex-col gap-2 items-center h-full'>
             <ProcessCreation/>
             <div className="flex gap-2 items-center justify-center relative">
-                <div className="flex flex-col gap-2 justify-start items-start max-w-[150px]">
-                  <SelectEscalationAlgorithm/>
-
-                  <div className='absolute bottom-[-250px]'>
-                    {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && isPreemptive && (
-                      <Quantum setQuantum={setQuantum} quantum={quantum} />
-                    )}
-                  </div>
-                  
+                <div className="flex flex-col gap-2 justify-start items-start max-w-[150px] w-full border-red-500">
+                  <SelectEscalationAlgorithm/>                  
                 </div>
             </div>
           </div>
 
-          <div className='h-full flex flex-col items-center gap-2 justify-center'>
+          <div className='h-full flex flex-col items-end gap-2 justify-center'>
             <button
               onClick={handlePlay}
-              className="btn btn-primary max-w-[150px] w-full"
+              className="btn btn-primary max-w-[50px] w-full"
               disabled={processes.length === 0}
             >
-              Iniciar <Play size={28} />
+               <Play size={28} />
             </button>
 
             <button
-                className="btn btn-primary max-w-[150px] w-full"
+                className="btn btn-primary max-w-[50px] w-full"
                 onClick={wipeProcesses}
                 disabled={processes.length === 0 || !!activeProcess}
               >
-                Limpar <Broom size={28} />
+                 <Broom size={28} />
               </button>
 
             {cycles && (
               <button
                 onClick={toggleShowStatistics}
-                className="btn btn-primary max-w-[150px] w-full" 
+                className="btn btn-primary max-w-[50px] w-full" 
                 disabled={cycles.length === 0}
               >
-                Detalhes<Info size={28} />
+                <Info size={28} />
               </button>
             )}
           </div>

@@ -13,15 +13,17 @@ export default function Quantum({ setQuantum, quantum }: QuantumProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="quantum">Quantum</label>
-      <input
-        type="number"
-        defaultValue={quantum}
-        name="quantum"
-        placeholder="Defina o quantum"
-        className="input input-bordered input-info w-full max-w-xs"
-        onChange={(e) => handleChangeQuantum(e.target.value)}
-      />
+      <label className="w-full max-w-[250px]">
+        <span className='font-bold underline'>Quantum</span>
+        <input
+          type="number"
+          defaultValue={quantum}
+          name="quantum"
+          placeholder="Defina o quantum"
+          className="input input-bordered input-info w-full max-w-xs mt-2"
+          onChange={(e) => handleChangeQuantum(e.target.value)}
+        />
+      </label>
     </div>
   );
 }

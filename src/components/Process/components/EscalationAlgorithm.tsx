@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { PreemptiveEscalationAlgorithm, NonPreemptiveEscalationAlgorithm } from '@/enums';
 import { useProcessesContext } from '@/context/context';
-import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
+import { ArrowDown, ArrowUp, GearSix, X } from '@phosphor-icons/react';
+import Quantum from './Quantum';
 
 export default function SelectEscalationAlgorithm() {
   const {
@@ -17,8 +18,8 @@ export default function SelectEscalationAlgorithm() {
     }
   });
   
-  const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive} = useProcessesContext();
-  const [arrow, setArrow] = useState<boolean>(false);
+  const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive, quantum, setQuantum, currentAlgorithm} = useProcessesContext();
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const selectedAlgorithm = watch('algorithm', '');
   const selectedCycleType = watch('cycleType')
@@ -34,65 +35,85 @@ export default function SelectEscalationAlgorithm() {
     setCurrentAlgorithm(selectedAlgorithm);
   }, [selectedAlgorithm, setCurrentAlgorithm]);
 
+  console.log(showModal)
+
   return (
-  <details className="dropdown bg-base-200">
-    <summary className="btn btn-primary text-[10px] flex-nowrap max-w-[150px]" onClick={() => setArrow(!arrow)}>Configuração
-    {!arrow ? <ArrowDown size={28} /> : <ArrowUp size={28} />}
-    </summary>
-    <div className="p-2 shadow menu mt-2 dropdown-content z-[1] bg-base-100 rounded-box max-w-[200px] w-full gap-2"> 
-    <form className="flex flex-col items-center gap-4 max-w-[500px]">
-      <div className="flex flex-col gap-2">
-      <div className="flex gap-2 items-center">
-        <input
-          {...register('cycleType')}
-          type="radio"  
-          className='radio'
-          value={'nonPreemptive'}
-          onChange={() =>  setIsPreemptive(false)}
-        />
-        <label>Não preemptivo</label>  
-      </div>
-
-      <div className="flex gap-2 items-center">
-        <input 
-          {...register('cycleType')}
-          type="radio"
-          className='radio'
-          value={'preemptive'}
-          onChange={() =>  setIsPreemptive(true)}
-        />
-        <label>Preemptivo</label>
-      </div>
-        
-        <select
-          disabled={!!activeProcess}
-          value={selectedAlgorithm}
-          className="select select-info w-full max-w-xs"
-          {...register('algorithm', { required: true })}
-        >
-          <option hidden className="text-gray-600">
-            Selecione o tipo de algoritmo
-          </option>
-
-          {isPreemptive ? EscalationAlgorithms.filter((algorithm) => algorithm.isPreemptive).map((algorithm, index) => (
-            <option value={algorithm.value} key={index}>
-              {algorithm.name}
-            </option>
-          )) : 
-          EscalationAlgorithms.filter((algorithm) => !algorithm.isPreemptive).map((algorithm, index) => (
-            <option value={algorithm.value} key={index}>
-              {algorithm.name}
-            </option>))
-          }
-          
-        </select>
-        {errors.color && (
-          <span className="ml-2 text-red-500">Campo obrigatório</span>
-        )}
-      </div>
-    </form>
-  </div>
-</details>
-   
+ 
+  <div>
+    <button className="btn btn-primary flex-nowrap max-w-[150px] w-full text-[10px]" onClick={()=> setShowModal(true)}> Configuração <GearSix size={28} /></button>
+    
+    {showModal && (
+       <dialog id="my_modal_2" className={`modal ${showModal && 'modal-open'}`}>
+       <div className="modal-box flex flex-col items-center gap-6">
+         <form className="flex flex-col items-center gap-4 max-w-[500px]">
+           <div className="flex flex-col gap-2">
+             
+             <div className='flex justify-between'>
+               <h1 className='text-green-500 font-bold mb-2 text-xl'>Configuração</h1>
+               <X weight='bold' color='white' className='cursor-pointer' size={25} onClick={()=> setShowModal(false)}></X>
+             </div>
+ 
+             <span className='font-bold underline'>Tipo de sistema</span>
+             <div className="flex gap-2 items-center">
+               <input
+                 {...register('cycleType')}
+                 type="radio"  
+                 className='radio'
+                 value={'nonPreemptive'}
+                 onChange={() =>  setIsPreemptive(false)}
+               />
+               <label>Não preemptivo</label>  
+             </div>
+ 
+             <div className="flex gap-2 items-center mb-2">
+               <input 
+                 {...register('cycleType')}
+                 type="radio"
+                 className='radio'
+                 value={'preemptive'}
+                 onChange={() =>  setIsPreemptive(true)}
+               />
+               <label>Preemptivo</label>
+             </div>
+             
+             <span className='font-bold underline'>Algoritmo de escalonamento</span>
+             <select
+               disabled={!!activeProcess}
+               value={selectedAlgorithm}
+               className="select select-info w-full max-w-xs"
+               {...register('algorithm', { required: true })}
+             >
+               <option hidden className="text-gray-600">
+                 Selecione o tipo de algoritmo
+               </option>
+ 
+               {isPreemptive ? EscalationAlgorithms.filter((algorithm) => algorithm.isPreemptive).map((algorithm, index) => (
+                 <option value={algorithm.value} key={index}>
+                   {algorithm.name}
+                 </option>
+               )) : 
+               EscalationAlgorithms.filter((algorithm) => !algorithm.isPreemptive).map((algorithm, index) => (
+                 <option value={algorithm.value} key={index}>
+                   {algorithm.name}
+                 </option>))
+               }
+               
+             </select>
+             {errors.color && (
+               <span className="ml-2 text-red-500">Campo obrigatório</span>
+             )}
+           </div>
+         </form>
+ 
+         <div>
+           {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && isPreemptive && (
+             <Quantum setQuantum={setQuantum} quantum={quantum} />
+           )}
+         </div>
+         <button onClick={() => setShowModal(false)} className='btn btn-error text-white font-bold'>Fechar</button>
+       </div>
+     </dialog>
+    )}
+</div>
   );
 }

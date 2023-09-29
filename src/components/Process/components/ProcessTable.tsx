@@ -76,7 +76,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
           </tbody>
         </table>
       ) : (
-        <div>Sem processos ainda... 🙁</div>
+        <p className='text-lg text-center'>Sem processos ainda... 🙁</p>
       )}
     </div>
   );
