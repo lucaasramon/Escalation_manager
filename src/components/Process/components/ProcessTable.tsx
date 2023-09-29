@@ -12,8 +12,8 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
     useProcessesContext();
 
   return (
-    <div className="overflow-x-auto">
-      <h1 className="text-center mb-4 text-xl">Tabela de processos</h1>
+    <div className="overflow-x-auto mt-24">
+      <h1 className="text-center mb-4 text-3xl font-bold">Tabela de processos</h1>
       {processes?.length ? (
         <table className="table table-zebra">
           <thead>
