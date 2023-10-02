@@ -14,10 +14,9 @@ export default function CyclesStatistics({
   cycles,
   quantum
 }: CyclesStatisticsProps) {
-  const { activeCycle, currentAlgorithm } = useProcessesContext();
 
   return (
-    <dialog id="my_modal_4" className="modal modal-open">
+    <dialog id="modal" className="modal modal-open">
       <div className="modal-box">
         <button
           onClick={showStatistics}
@@ -25,7 +24,7 @@ export default function CyclesStatistics({
         >
           ✕
         </button>
-        <h1>Estatisticas</h1>
+        <h1 className='text-xl font-bold text-green-500'>Estatisticas</h1>
         <div className="p-4 text-white">
           {cycles?.map((cycle) => (
             <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">

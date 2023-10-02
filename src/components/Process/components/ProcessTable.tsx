@@ -15,7 +15,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
     <div className="overflow-x-auto mt-24">
       <h1 className="text-center mb-4 text-3xl font-bold">Tabela de processos</h1>
       {processes?.length ? (
-        <table className="table table-zebra">
+        <table className="table">
           <thead>
             <tr>
               <th>PID</th>
@@ -28,7 +28,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
           </thead>
           <tbody>
             {processes.map((process, index) => (
-              <tr key={process?.id ? process.id : index} className={`w-full `}>
+              <tr key={process?.id ? process.id : index} className={`w-full ${process.id === activeProcess?.id && 'bg-black opacity-9 font-bold'}  `}>
                 <td>
                   <div>
                     <div className="flex items-center gap-2">

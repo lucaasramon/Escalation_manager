@@ -13,7 +13,7 @@ export default function SelectEscalationAlgorithm() {
   } = useForm({
     defaultValues: {
       cycleType: 'nonPreemptive',
-      algorithm: 'Selecione o algoritmo',
+      algorithm: undefined,
       color: ''
     }
   });
@@ -21,7 +21,7 @@ export default function SelectEscalationAlgorithm() {
   const { activeProcess, setIsPreemptive, setCurrentAlgorithm, isPreemptive, quantum, setQuantum, currentAlgorithm} = useProcessesContext();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const selectedAlgorithm = watch('algorithm', 'Selecione o algoritmo');
+  const selectedAlgorithm = watch('algorithm', undefined);
 
   const EscalationAlgorithms = [
     {name: 'Prioridade', value: PreemptiveEscalationAlgorithm.Priority, isPreemptive: true},
@@ -33,6 +33,10 @@ export default function SelectEscalationAlgorithm() {
   useEffect(() => {
     setCurrentAlgorithm(selectedAlgorithm);
   }, [selectedAlgorithm, setCurrentAlgorithm]);
+
+  useEffect(() => {
+    setCurrentAlgorithm(undefined);
+  }, [isPreemptive]);
 
   return (
  
@@ -77,7 +81,6 @@ export default function SelectEscalationAlgorithm() {
               <select
                 disabled={!!activeProcess}
                 value={selectedAlgorithm}
-                defaultValue={'Não selecionado pai'}
                 className="select select-info w-full max-w-xs"
                 {...register('algorithm', { required: true })}
               >
@@ -108,7 +111,7 @@ export default function SelectEscalationAlgorithm() {
              <Quantum setQuantum={setQuantum} quantum={quantum} />
            )}
          </div>
-         <button onClick={() => setShowModal(false)} className='btn btn-error text-white font-bold'>Fechar</button>
+         <button onClick={() => setShowModal(false)} className='btn btn-primary text-white font-bold'>Pronto</button>
        </div>
      </dialog>
     )}

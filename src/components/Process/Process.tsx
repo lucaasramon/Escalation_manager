@@ -111,7 +111,6 @@ export default function Process() {
         <div className='hidden sm:block max-w-[350px] w-full'>
           <CpuComponent/>
         </div>
-
           <ActionButtons/>
       </div>
 
