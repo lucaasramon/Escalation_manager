@@ -22,8 +22,13 @@ export const changeActiveProcess = (
         return setCycles((prevCycles: ICycle[]) => {
           return prevCycles.map((cycle) => {
             if (cycle.id === activeCycle.id) {
-              setActiveCycle({ ...activeCycle, status: CycleState.Finished });
-              return { ...cycle, status: CycleState.Finished };
+              const allFinished = cycle.cycleProcesses.every(
+                process => process.state === ProcessState.Finished
+              );
+              if(allFinished) {
+                  setActiveCycle({ ...activeCycle, status: CycleState.Finished });
+                  return { ...cycle, status: CycleState.Finished };
+              }
             }
             return cycle;
           });
@@ -50,7 +55,12 @@ export const changeActiveProcess = (
     }
     
     const currentProcess = sortedProcesses[processIndex];
-    currentProcess.state = ProcessState.Running
-    
+
+    if(currentProcess.state != ProcessState.Finished){
+      currentProcess.state = ProcessState.Running
+    }else{
+      return setProcessIndex(prev => prev +1)
+    }
+
     return setActiveProcess(currentProcess)
   };

@@ -1,7 +1,7 @@
 import { useProcessesContext } from '@/context/context';
 import { CycleState, ProcessState } from '@/enums';
 import { ICycle } from '@/types';
-import { Broom, Info, Play } from '@phosphor-icons/react'
+import { Broom, Info, Play, PlayPause } from '@phosphor-icons/react'
 import React, { useState } from 'react'
 import CyclesStatistics from './Cycles/CyclesStatistics';
 
@@ -19,9 +19,16 @@ export default function ActionButtons({}: Props) {
         isPreemptive,
         setProcessIndex,
         quantum,
+        setIsCycleRunning,
+        isCycleRunning,
+        activeCycle
       } = useProcessesContext();
 
-        const [showStatistics, setShowStatistics] = useState<boolean>(false);
+      const [showStatistics, setShowStatistics] = useState<boolean>(false);
+
+      const toggleCycleRunning = () => {
+        setIsCycleRunning(!isCycleRunning);
+      };
 
       const wipeProcesses = () => {
         setProcesses([]);
@@ -36,6 +43,7 @@ export default function ActionButtons({}: Props) {
           ...process,
           cpuUsageTime: 0,
           waitingTime: 0,
+          isActive: true,
           state: ProcessState.Ready,
         }));
     
@@ -52,6 +60,7 @@ export default function ActionButtons({}: Props) {
         setProcessIndex(0)
         setActiveCycle(newCycle);
         setCycles((prevState: ICycle[]) => [...prevState, newCycle]);
+        setIsCycleRunning(true)
       };
 
   return (
@@ -84,6 +93,18 @@ export default function ActionButtons({}: Props) {
             <span className='hidden md:block'>Detalhes</span>
         </button>
         )}
+
+        <button
+            onClick={toggleCycleRunning}
+            className="btn btn-primary max-w-[50px] w-full md:max-w-[150px]" 
+            disabled={!activeCycle || !activeProcess}
+        >
+            <PlayPause size={23} />
+            <span className='hidden md:block'>
+              {isCycleRunning ? "Pausar" : "Despausar"}
+            </span>
+        </button>
+
         {showStatistics && (
         <CyclesStatistics
           cycles={cycles}

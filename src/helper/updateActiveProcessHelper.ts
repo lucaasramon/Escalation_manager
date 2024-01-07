@@ -15,13 +15,23 @@ export const updateActiveProcessHelper = (
     ) => {
 
     const updatedProcesses  = cycle?.cycleProcesses?.map((process) => {
-      if (process.state === ProcessState.Finished) {
+      if (process.state === ProcessState.Finished || !process.isActive) {
         return process
       }
 
       else{
         if (process?.id === activeProcess?.id) {
+          console.log("caiu aqui")
+          console.log("process.cpuUsageTime: ", process.cpuUsageTime)
+          console.log("process.runningTime: ", process.runningTime)
+          if(process.cpuUsageTime >= process.runningTime){
+            console.log("ESTA CAINDO AQUI?")
+            console.log("activeCycle: ", activeCycle)
+             setProcessIndex(prev => prev + 1)  //apagar tlavez
+            return {...process, state: ProcessState.Finished} 
+          }
 
+          console.log("E SERA Q CAI AKI?")
           const timeLimit = process?.runningTime;
 
           setActiveProcess({...activeProcess, 

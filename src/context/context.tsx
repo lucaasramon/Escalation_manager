@@ -21,6 +21,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [count, setCount] = useState<number>(1);
   const [processIndex, setProcessIndex] = useState<number>(0);
   const [quantum, setQuantum] = useState<number>(5);
+  const [isCycleRunning, setIsCycleRunning] = useState<boolean>(false);
 
   const contextValue: IProcessesContext = {
     processes,
@@ -44,7 +45,9 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     processIndex,
     setProcessIndex,
     quantum, 
-    setQuantum
+    setQuantum,
+    isCycleRunning, 
+    setIsCycleRunning
   };
 
   return (

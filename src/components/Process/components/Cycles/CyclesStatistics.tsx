@@ -1,7 +1,6 @@
 import { useProcessesContext } from '@/context/context';
 import { CycleState, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle } from '@/types';
-import React from 'react';
 
 type CyclesStatisticsProps = {
   showStatistics: () => void;
@@ -26,7 +25,7 @@ export default function CyclesStatistics({
         </button>
         <h1 className='text-xl font-bold text-green-500'>Estatisticas</h1>
         <div className="p-4 text-white">
-          {cycles?.map((cycle) => (
+          {cycles.sort((a, b) => b.id - a.id)?.map((cycle) => (
             <div key={cycle.id} className="bg-gray-800 rounded-lg p-4 mb-4">
               <div className="flex gap-2 w-full justify-between">
                 <div className='flex flex-col items-center justify-center mb-2'>
@@ -61,7 +60,7 @@ export default function CyclesStatistics({
                       Prioridade: {process?.priority}
                     </li>
                   
-                    <li className={`text-sm flex gap-1 items-center`}>Estado: <p className={`text-sm  font-normal ${process.state === ProcessState.Ready ? 'text-blue-500' : process.state === ProcessState.Running ? 'text-green-500 font-bold' : 'text-red-500'}`}>
+                    <li className={`text-sm flex gap-1 items-center`}>Estado: <p className={`text-sm  font-normal ${process.state === ProcessState.Ready ? 'text-blue-500' : process.state === ProcessState.Running ? 'text-green-500 font-bold' : process.state === ProcessState.Waiting ? 'text-gray-500 font-bold' : 'text-red-500'}`}>
                      {process?.state} </p> </li>
                     <li className="text-sm">
                       Utilização de CPU: {process?.cpuUsageTime} seg(s)

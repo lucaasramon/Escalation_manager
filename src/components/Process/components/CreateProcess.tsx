@@ -75,6 +75,7 @@ export default function CreateProcess({
         cpuUsageTime: 0,
         waitingTime: 0,
         state: ProcessState.Ready,
+        isActive: true,
         createdAt: new Date(),
       };
 
@@ -98,16 +99,16 @@ export default function CreateProcess({
       if (activeCycle?.status === CycleState.Active && isPreemptive) {
         setActiveCycle((prevActiveCycle: ICycle) => ({
           ...prevActiveCycle,
-          cycleProcesses: [...prevActiveCycle.cycleProcesses.map((process) => {
+          cycleProcesses: prevActiveCycle.cycleProcesses.map((process) => {
             if(process.id === activeProcess?.id) {
               return {
                 ...process, state: ProcessState.Ready
               }
             }
             return process
-          }), newProcess],
+          }).concat(newProcess),
         }));
-      
+
         setCycles((prevCycles: ICycle[]) =>
           prevCycles.map((cycle) => {
             if (cycle.id === activeCycle.id) {

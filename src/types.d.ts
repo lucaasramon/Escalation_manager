@@ -9,7 +9,7 @@ export interface IProcess {
   cpuUsageTime: number;
   waitingTime: number;
   runningTime: number;
-  quantum?: number;
+  isActive: boolean;
   createdAt?: Date;
   startTime?: number;
 }
@@ -45,4 +45,6 @@ interface IProcessesContext {
   setProcessIndex: Dispatch<SetStateAction<number>>;
   quantum: number
   setQuantum: Dispatch<SetStateAction<number>>;
+  isCycleRunning: boolean
+  setIsCycleRunning: Dispatch<SetStateAction<boolean>>;
 }

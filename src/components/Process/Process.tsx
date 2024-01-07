@@ -1,13 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import CreateProcess from './components/CreateProcess';
-import { ICycle, IProcess } from '@/types';
+import { IProcess } from '@/types';
 import ProcessTable from './components/ProcessTable';
-import { Plus, Cpu, Play, Info, Broom, ArrowDown, ArrowUp } from '@phosphor-icons/react';
-import { CycleState, NonPreemptiveEscalationAlgorithm, PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
+import { CycleState, ProcessState } from '@/enums';
 import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
-import Quantum from './components/Quantum';
-import CyclesStatistics from './components/Cycles/CyclesStatistics';
 import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
 import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
@@ -18,27 +14,24 @@ import CpuComponent from './components/CpuComponent';
 
 export default function Process() {
   const {
-    cycles,
     setCycles,
     activeCycle,
     activeProcess,
     currentAlgorithm,
     setActiveProcess,
     setActiveCycle,
-    processes,
     setProcesses,
-    isPreemptive,
     count,
     setCount,
     processIndex, 
     setProcessIndex,
     quantum,
     setQuantum,
+    isCycleRunning
   } = useProcessesContext();
 
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
   
-
   // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
     setProcesses((prevProcesses: IProcess[]) =>
@@ -51,13 +44,13 @@ export default function Process() {
         };
       }),
     );
+    setQuantum(0)
   }, [currentAlgorithm]);
 
   // useEffect para atualizar as informações dos processos do ciclo ativo
   useEffect(() => {
-    if (activeCycle && activeProcess) {
+    if (activeCycle && activeProcess && isCycleRunning) {
       const intervalId = setInterval(() => {
-
         UpdateActiveCycleHelper(
           setCycles,
           setActiveCycle,
@@ -78,12 +71,12 @@ export default function Process() {
         clearInterval(intervalId);
       };
     }
-  }, [activeProcess]);
+  }, [activeProcess, isCycleRunning]);
 
   // useEffect para ordenar e alternar os processos na cpu
   useEffect(() => {
-
     if (activeCycle?.status === CycleState.Active) {
+      debugger
       let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
       setSortedProcesses(sortedProcesses)
       changeActiveProcess(
@@ -98,7 +91,7 @@ export default function Process() {
         setActiveCycle
       );
     }
-  }, [activeCycle, activeCycle?.cycleProcesses, processIndex]);
+  }, [activeCycle, activeCycle?.cycleProcesses, processIndex, sortedProcesses]);
 
   return (
     <div className="p-4 w-full grid grid-rows-2 sm:grid-cols-1 sm:grid-rows-1 gap-2 items-start md:flex-row md:items-start md:justify-between">

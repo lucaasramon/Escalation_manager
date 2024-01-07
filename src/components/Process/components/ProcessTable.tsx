@@ -1,6 +1,7 @@
 import { useProcessesContext } from '@/context/context';
 import { PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
-import { ICycle, IProcess } from '@/types';
+import { IProcess } from '@/types';
+import { PlayPause, XCircle } from '@phosphor-icons/react';
 import React from 'react';
 
 type ProcessTableProps = {
@@ -8,8 +9,27 @@ type ProcessTableProps = {
 };
 
 export default function ProcessTable({ quantum }: ProcessTableProps) {
-  const { activeProcess, currentAlgorithm, processes, activeCycle } =
+  const { activeProcess, currentAlgorithm, processes, setProcesses, setActiveProcess } =
     useProcessesContext();
+
+  const handleDeleteProcess = (id: number) => {
+    const filteredProcesses = processes.filter((process: IProcess) => process.id != id)
+    setProcesses(filteredProcesses)
+  }
+  const toggleProcessActive = (id: number) => {
+    const changedProcesses = processes.map((process: IProcess) => {
+      if(process.id == id){
+        process.isActive = !process.isActive
+        if (process.isActive){
+          process.state = ProcessState.Ready
+        }else{
+          process.state = ProcessState.Waiting
+        }
+      }
+      return process
+    })
+    setProcesses(changedProcesses)
+  }
 
   return (
     <div className="overflow-x-auto mt-24">
@@ -20,10 +40,16 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
             <tr>
               <th>PID</th>
               <th>Prioridade</th>
+              {quantum && currentAlgorithm === PreemptiveEscalationAlgorithm.RR ? (
+                  <th>Quantum</th>
+                ) : null}
+              <th>Tempo restante</th>
               <th>Tempo de execução</th>
               <th>Utilização de CPU</th>
               <th>Tempo em espera</th>
               <th>Estado</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -48,12 +74,11 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                   </div>
                 </td>
                 <td>{process?.priority}</td>
-                <td>
-                  {currentAlgorithm === PreemptiveEscalationAlgorithm.RR && quantum
-                    ? quantum
-                    : process?.runningTime}
-                  seg(s)
-                </td>
+                {quantum && currentAlgorithm === PreemptiveEscalationAlgorithm.RR ? (
+                  <td>{quantum}</td>
+                ): null}
+                 <td>{process?.runningTime - process?.cpuUsageTime} seg(s)</td>
+                <td>{process?.runningTime} seg(s)</td>
                 <td>{process?.cpuUsageTime} seg(s)</td>
                 <td>{process?.waitingTime} seg(s)</td>
                 <td
@@ -71,6 +96,18 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 >
                   {process?.state}
                 </td>
+                <td><XCircle className='cursor-pointer text-white hover:text-red-600' onClick={() => handleDeleteProcess(process.id)} size={28} /></td>
+                <td>
+                  <button 
+                    disabled={process.state == ProcessState.Finished}
+                    className={`cursor-pointer text-white hover:text-green-600 ${process.state === ProcessState.Finished ? "opacity-50 cursor-not-allowed hover:text-red-500" : ""}`}
+                    onClick={() => toggleProcessActive(process.id)}
+                    >
+                      <PlayPause 
+                        size={28} 
+                      />
+                  </button> 
+              </td>
               </tr>
             ))}
           </tbody>
