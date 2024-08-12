@@ -3,6 +3,7 @@ import { PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { IProcess } from '@/types';
 import { PlayPause, XCircle } from '@phosphor-icons/react';
 import React from 'react';
+import ProcessArrival from './ProcessArrival';
 
 type ProcessTableProps = {
   quantum: number | undefined;
@@ -81,20 +82,8 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 <td>{process?.runningTime} seg(s)</td>
                 <td>{process?.cpuUsageTime} seg(s)</td>
                 <td>{process?.waitingTime} seg(s)</td>
-                <td
-                  className={`
-                  ${
-                    process?.state === ProcessState.Ready
-                      ? 'text-blue-500'
-                      : process?.state === ProcessState.Running
-                      ? 'text-green-500'
-                      : process?.state === ProcessState.Finished
-                      ? 'text-red-500'
-                      : 'text-gray-500'
-                  } 
-                  `}
-                >
-                  {process?.state}
+                <td>
+                  <ProcessArrival process={process}/>
                 </td>
                 <td><XCircle className='cursor-pointer text-white hover:text-red-600' onClick={() => handleDeleteProcess(process.id)} size={28} /></td>
                 <td>

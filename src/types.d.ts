@@ -12,6 +12,8 @@ export interface IProcess {
   isActive: boolean;
   createdAt?: Date;
   startTime?: number;
+  arrivalTime: number;
+  hasArrived: boolean
 }
 
 export interface ICycle {
@@ -20,6 +22,7 @@ export interface ICycle {
   algorithm: EscalationAlgorithm;
   cycleProcesses: IProcess[];
   isPreemptive: boolean
+  duration: number
 }
 
 interface IProcessesContext {

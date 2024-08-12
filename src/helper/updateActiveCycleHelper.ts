@@ -20,7 +20,7 @@ export function UpdateActiveCycleHelper(
     setCycles((prevCycles: ICycle[]) => {
       const updatedCycles = prevCycles?.map((cycle) => {
         if (cycle?.id === activeCycle?.id) {
-
+          let incrementedDuration = cycle.duration+=1
           const updatedCycleProcesses: IProcess[] = updateActiveProcessHelper(
             activeProcess,
             cycle,
@@ -30,10 +30,11 @@ export function UpdateActiveCycleHelper(
             count,
             setCount,
             quantum,
+            incrementedDuration
           );
 
           setProcesses(updatedCycleProcesses);
-          setActiveCycle((prevCycle) => ({...prevCycle, cycleProcesses: updatedCycleProcesses}))
+          setActiveCycle((prevCycle) => ({...prevCycle, duration: incrementedDuration, cycleProcesses: updatedCycleProcesses}))
 
           return {
             ...cycle,

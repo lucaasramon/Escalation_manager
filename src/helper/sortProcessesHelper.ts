@@ -18,7 +18,6 @@ export const sortProcessesHelper = (
         sortedProcesses = sortBySjf(activeCycle?.cycleProcesses);
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.Priority) {
         sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
-        debugger
         sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
       console.log(sortedProcesses)
 

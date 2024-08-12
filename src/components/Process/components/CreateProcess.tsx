@@ -75,8 +75,10 @@ export default function CreateProcess({
         cpuUsageTime: 0,
         waitingTime: 0,
         state: ProcessState.Ready,
-        isActive: true,
+        isActive: false,
         createdAt: new Date(),
+        arrivalTime: data.arrivalTime,
+        hasArrived: false
       };
 
       if(processesQuantity > 1)  {
@@ -204,6 +206,22 @@ export default function CreateProcess({
                     <span className="ml-2  text-red-500">Campo obrigatório</span>
                   )}
                 </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="priority" className='text-sm'>Tempo de chegada (segs)</label>
+                <input
+                  type="number"
+                  placeholder="Tempo de chegada"
+                  min={0}
+                  max={15}
+                  defaultValue={0}
+                  {...register('arrivalTime', { required: true })}
+                  className="input input-bordered input-info w-full max-w-xs"
+                />
+                {errors.priority && (
+                  <span className="ml-2  text-red-500">Campo obrigatório</span>
+                )}
+              </div>
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="color" className='text-sm trucante'>Cor</label>

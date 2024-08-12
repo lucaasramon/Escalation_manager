@@ -74,24 +74,23 @@ export default function Process() {
   }, [activeProcess, isCycleRunning]);
 
   // useEffect para ordenar e alternar os processos na cpu
-  useEffect(() => {
-    if (activeCycle?.status === CycleState.Active) {
-      debugger
-      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
-      setSortedProcesses(sortedProcesses)
-      changeActiveProcess(
-        activeProcess,
-        processIndex, 
-        setActiveProcess, 
-        sortedProcesses, 
-        currentAlgorithm,
-        setProcessIndex,
-        activeCycle,
-        setCycles,
-        setActiveCycle
-      );
-    }
-  }, [activeCycle, activeCycle?.cycleProcesses, processIndex, sortedProcesses]);
+  // useEffect(() => {
+  //   if (activeCycle?.status === CycleState.Active) {
+  //     let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
+  //     setSortedProcesses(sortedProcesses)
+  //     changeActiveProcess(
+  //       activeProcess,
+  //       processIndex, 
+  //       setActiveProcess, 
+  //       sortedProcesses, 
+  //       currentAlgorithm,
+  //       setProcessIndex,
+  //       activeCycle,
+  //       setCycles,
+  //       setActiveCycle
+  //     );
+  //   }
+  // }, [activeCycle, activeCycle?.cycleProcesses, processIndex, sortedProcesses]);
 
   return (
     <div className="p-4 w-full grid grid-rows-2 sm:grid-cols-1 sm:grid-rows-1 gap-2 items-start md:flex-row md:items-start md:justify-between">

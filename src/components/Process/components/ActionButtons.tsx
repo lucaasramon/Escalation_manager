@@ -54,7 +54,8 @@ export default function ActionButtons({}: Props) {
           algorithm: currentAlgorithm,
           cycleProcesses: newProcesses,
           status: CycleState.Active,
-          isPreemptive: isPreemptive
+          isPreemptive: isPreemptive,
+          duration: 0
         };
     
         setProcessIndex(0)
@@ -101,7 +102,7 @@ export default function ActionButtons({}: Props) {
         >
             <PlayPause size={23} />
             <span className='hidden md:block'>
-              {isCycleRunning ? "Pausar" : "Despausar"}
+              {isCycleRunning ? "Pausar" : "Continuar"}
             </span>
         </button>
 

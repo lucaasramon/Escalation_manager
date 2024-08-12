@@ -12,7 +12,15 @@ export const updateActiveProcessHelper = (
     count: number,
     setCount: React.Dispatch<React.SetStateAction<number>>,
     quantum: number,  
+    cycleDuration: number
     ) => {
+
+    const hasArrived = (process: IProcess) => {
+      if(cycleDuration >= process.arrivalTime){
+        process.hasArrived =  true
+        return process
+      }
+    }
 
     const updatedProcesses  = cycle?.cycleProcesses?.map((process) => {
       if (process.state === ProcessState.Finished || !process.isActive) {
@@ -20,18 +28,13 @@ export const updateActiveProcessHelper = (
       }
 
       else{
+        hasArrived(process)
         if (process?.id === activeProcess?.id) {
-          console.log("caiu aqui")
-          console.log("process.cpuUsageTime: ", process.cpuUsageTime)
-          console.log("process.runningTime: ", process.runningTime)
           if(process.cpuUsageTime >= process.runningTime){
-            console.log("ESTA CAINDO AQUI?")
-            console.log("activeCycle: ", activeCycle)
              setProcessIndex(prev => prev + 1)  //apagar tlavez
             return {...process, state: ProcessState.Finished} 
           }
 
-          console.log("E SERA Q CAI AKI?")
           const timeLimit = process?.runningTime;
 
           setActiveProcess({...activeProcess, 
