@@ -14,6 +14,7 @@ export interface IProcess {
   startTime?: number;
   arrivalTime: number;
   hasArrived: boolean
+  arrivalDate: Date | undefined
 }
 
 export interface ICycle {

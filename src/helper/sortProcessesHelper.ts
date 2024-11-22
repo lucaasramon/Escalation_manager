@@ -19,8 +19,6 @@ export const sortProcessesHelper = (
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.Priority) {
         sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
         sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
-      console.log(sortedProcesses)
-
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.RR) {
         sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
         sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)

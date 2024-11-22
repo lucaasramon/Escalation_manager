@@ -28,8 +28,10 @@ export const generateMultipleProcesses = (
         state: ProcessState.Ready,
         createdAt: new Date(),
         isActive: false,
-        arrivalTime: Math.floor(Math.random() * 10),
-        hasArrived: false
+        arrivalTime: processBase?.arrivalTime || 0,
+        hasArrived: false,
+        arrivalDate: new Date(),
+        startTime: Math.floor(Math.random() * 10),
       };
 
       setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);

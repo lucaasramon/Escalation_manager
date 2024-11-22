@@ -37,7 +37,7 @@ export default function CyclesStatistics({
       {cycles
       .sort((a, b) => b.id - a.id)
       .map((cycle) => (
-        <div className='border border-primary rounded mb-4'>
+        <div key={cycle.id} className='border border-primary rounded mb-4'>
           <div className="flex justify-between m-4">
             <span>{cycle.algorithm}</span>
             <h1 className={`text-lg font-semibold mb-2 italic ${cycle.status === CycleState.Active ? 'text-green-500' : 'text-red-500'}`}>
@@ -56,8 +56,8 @@ export default function CyclesStatistics({
               </tr>
             </thead>
             <tbody>
-              {cycle.cycleProcesses?.map((process) => (
-                <tr key={process?.id}> 
+              {cycle.cycleProcesses?.map((process, index) => (
+                <tr key={index}> 
                   <th>{process.id} </th> 
                   <td>{process.priority} seg(s)</td> 
                   <td>{process.waitingTime} seg(s)</td> 

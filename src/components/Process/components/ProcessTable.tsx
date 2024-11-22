@@ -1,35 +1,47 @@
 import { useProcessesContext } from '@/context/context';
 import { PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
-import { IProcess } from '@/types';
+import { ICycle, IProcess } from '@/types';
 import { PlayPause, XCircle } from '@phosphor-icons/react';
 import React from 'react';
+import { CycleState } from '@/enums';
 import ProcessArrival from './ProcessArrival';
+import { updateAllProcesses } from '@/helper/updateAllProcesses';
 
 type ProcessTableProps = {
   quantum: number | undefined;
 };
 
 export default function ProcessTable({ quantum }: ProcessTableProps) {
-  const { activeProcess, currentAlgorithm, processes, setProcesses, setActiveProcess } =
+  const { activeProcess, currentAlgorithm, processes, setProcesses, activeCycle, setCycles, setActiveCycle, setActiveProcess} =
     useProcessesContext();
 
   const handleDeleteProcess = (id: number) => {
     const filteredProcesses = processes.filter((process: IProcess) => process.id != id)
     setProcesses(filteredProcesses)
+
   }
   const toggleProcessActive = (id: number) => {
-    const changedProcesses = processes.map((process: IProcess) => {
-      if(process.id == id){
-        process.isActive = !process.isActive
-        if (process.isActive){
-          process.state = ProcessState.Ready
+    setActiveCycle((prevCycle: ICycle) => {
+      const updatedProcesses = prevCycle.cycleProcesses.map((process: IProcess) => {
+        if(process.id === id){
+          return {
+            ...process, isActive: !process.isActive
+          }
         }else{
-          process.state = ProcessState.Waiting
+          return process
         }
-      }
-      return process
+      })
+      return prevCycle ? {
+        ...prevCycle,
+        cycleProcesses: updatedProcesses,
+      } : null;
     })
-    setProcesses(changedProcesses)
+
+    updateAllProcesses(activeCycle, setCycles ,setProcesses)
+
+    if(id === activeProcess?.id){
+      setActiveProcess(null)
+    }
   }
 
   return (
@@ -88,7 +100,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 <td><XCircle className='cursor-pointer text-white hover:text-red-600' onClick={() => handleDeleteProcess(process.id)} size={28} /></td>
                 <td>
                   <button 
-                    disabled={process.state == ProcessState.Finished}
+                    disabled={process.state == ProcessState.Finished || activeCycle?.status !== CycleState.Active}
                     className={`cursor-pointer text-white hover:text-green-600 ${process.state === ProcessState.Finished ? "opacity-50 cursor-not-allowed hover:text-red-500" : ""}`}
                     onClick={() => toggleProcessActive(process.id)}
                     >

@@ -7,10 +7,12 @@ import SelectEscalationAlgorithm from './components/EscalationAlgorithm';
 import { UpdateActiveCycleHelper } from '@/helper/updateActiveCycleHelper';
 import { useProcessesContext } from '@/context/context';
 import { sortProcessesHelper } from '@/helper/sortProcessesHelper';
-import { changeActiveProcess } from '@/helper/changeActiveProcessHelper';
+import { changeOrInitializeActiveProcess } from '@/helper/changeActiveProcessHelper';
 import ProcessCreation from './components/ProcessCreation';
 import ActionButtons from './components/ActionButtons';
 import CpuComponent from './components/CpuComponent';
+import { updateActiveProcessHelper } from '@/helper/updateActiveProcessHelper';
+import { updateAllProcesses } from '@/helper/updateAllProcesses';
 
 export default function Process() {
   const {
@@ -27,11 +29,13 @@ export default function Process() {
     setProcessIndex,
     quantum,
     setQuantum,
-    isCycleRunning
+    isCycleRunning,
+    processes,
+    cycles
   } = useProcessesContext();
 
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
-  
+
   // useEffect resetar as informações da tabela quando o EscalationAlgorithm for trocado
   useEffect(() => {
     setProcesses((prevProcesses: IProcess[]) =>
@@ -47,50 +51,54 @@ export default function Process() {
     setQuantum(0)
   }, [currentAlgorithm]);
 
-  // useEffect para atualizar as informações dos processos do ciclo ativo
+  // useEffect para atualizar as informações do ciclo ativo, do processo ativo e dos processos
   useEffect(() => {
-    if (activeCycle && activeProcess && isCycleRunning) {
+    console.log("chamo use effect")
+    if (activeCycle && isCycleRunning) {
       const intervalId = setInterval(() => {
+
+        //atualizar informações do ciclo ativo (duração, status, tempo dos processos)
         UpdateActiveCycleHelper(
-          setCycles,
           setActiveCycle,
-          activeProcess,
           activeCycle,
-          setProcesses,
-          setActiveProcess,
-          processIndex,
-          setProcessIndex,
-          count,
-          setCount,
-          quantum,
-          sortedProcesses,
+          activeProcess,
+          setActiveProcess
         );
 
+        //atualiza o processo ativo
+        updateActiveProcessHelper(
+          setActiveProcess,
+        );
+
+        //atualiza os processos (estado de process, estado de cycles)
+        updateAllProcesses(
+          activeCycle,
+          setCycles,
+          setProcesses
+        )
       }, 1000);
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [activeProcess, isCycleRunning]);
+  }, [activeCycle, activeProcess]);
 
   // useEffect para ordenar e alternar os processos na cpu
-  // useEffect(() => {
-  //   if (activeCycle?.status === CycleState.Active) {
-  //     let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
-  //     setSortedProcesses(sortedProcesses)
-  //     changeActiveProcess(
-  //       activeProcess,
-  //       processIndex, 
-  //       setActiveProcess, 
-  //       sortedProcesses, 
-  //       currentAlgorithm,
-  //       setProcessIndex,
-  //       activeCycle,
-  //       setCycles,
-  //       setActiveCycle
-  //     );
-  //   }
-  // }, [activeCycle, activeCycle?.cycleProcesses, processIndex, sortedProcesses]);
+  useEffect(() => {
+
+    if (activeCycle?.status === CycleState.Active) {
+      let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
+
+      if((sortedProcesses.length > 0 && !activeProcess) || activeProcess?.state === ProcessState.Finished){
+        changeOrInitializeActiveProcess(
+          processIndex,
+          setActiveProcess,
+          sortedProcesses,
+          setProcessIndex,
+        );
+      }
+    }
+  }, [activeCycle, activeCycle?.cycleProcesses, activeProcess]);
 
   return (
     <div className="p-4 w-full grid grid-rows-2 sm:grid-cols-1 sm:grid-rows-1 gap-2 items-start md:flex-row md:items-start md:justify-between">

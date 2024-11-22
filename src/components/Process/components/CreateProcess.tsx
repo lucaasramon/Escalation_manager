@@ -65,7 +65,6 @@ export default function CreateProcess({
 
   const onSubmit: any = (data: IProcess, processCreationType: ProcessCreationType = ProcessCreationType.parametized) => {
     if(processCreationType === ProcessCreationType.parametized) {
-
       const newProcess: IProcess = {
         id: generateUniqueNumber(1000, 9999),
         priority: Number(data.priority),
@@ -78,7 +77,8 @@ export default function CreateProcess({
         isActive: false,
         createdAt: new Date(),
         arrivalTime: data.arrivalTime,
-        hasArrived: false
+        hasArrived: false,
+        arrivalDate: undefined
       };
 
       if(processesQuantity > 1)  {

@@ -6,7 +6,7 @@ import CreateProcess from './CreateProcess';
 type Props = {}
 
 export default function ProcessCreation({}: Props) {
-    const {quantum} = useProcessesContext();
+  const {quantum} = useProcessesContext();
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [arrow, setArrow] = useState<boolean>(false);
