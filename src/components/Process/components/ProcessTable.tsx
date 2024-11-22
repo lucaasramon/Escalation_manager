@@ -51,6 +51,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
         <table className="table">
           <thead>
             <tr>
+              <th>Posição</th>
               <th>PID</th>
               <th>Prioridade</th>
               {quantum && currentAlgorithm === PreemptiveEscalationAlgorithm.RR ? (
@@ -68,6 +69,10 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
           <tbody>
             {processes.map((process, index) => (
               <tr key={process?.id ? process.id : index} className={`w-full ${process.id === activeProcess?.id && 'bg-black opacity-9 font-bold'}  `}>
+                <td>
+                  {process.position
+                   ? process.state === ProcessState.Finished ? "-" : `${process.position}º` : "-"}
+                </td>
                 <td>
                   <div>
                     <div className="flex items-center gap-2">

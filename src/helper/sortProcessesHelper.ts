@@ -23,5 +23,9 @@ export const sortProcessesHelper = (
         sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
         sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
     }
+
+    sortedProcesses.forEach((process, index) => {
+        process.position = index+1
+    })
     return sortedProcesses
 }

@@ -1,11 +1,11 @@
+import { ProcessState } from '@/enums';
 import { IProcess } from '@/types';
 
 export const sortBySjf = (processes: IProcess[]) => {
-  const tempProcesses = [...processes];
+  let tempProcesses = processes.filter((process: IProcess) => process.hasArrived && process.state !== ProcessState.Finished && process.isActive);
   tempProcesses.sort(
     (objA, objB) => Number(objA.runningTime) - Number(objB.runningTime),
   );
 
-  const sortedProcesses = tempProcesses.filter((process) => process.isActive)
-  return sortedProcesses;
+  return tempProcesses
 };

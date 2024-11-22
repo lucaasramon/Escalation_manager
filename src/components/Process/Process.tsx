@@ -31,7 +31,7 @@ export default function Process() {
     setQuantum,
     isCycleRunning,
     processes,
-    cycles
+    cycles,
   } = useProcessesContext();
 
   const [sortedProcesses, setSortedProcesses] = useState<IProcess[]>([]);
@@ -53,7 +53,6 @@ export default function Process() {
 
   // useEffect para atualizar as informações do ciclo ativo, do processo ativo e dos processos
   useEffect(() => {
-    console.log("chamo use effect")
     if (activeCycle && isCycleRunning) {
       const intervalId = setInterval(() => {
 
@@ -85,11 +84,13 @@ export default function Process() {
 
   // useEffect para ordenar e alternar os processos na cpu
   useEffect(() => {
-
     if (activeCycle?.status === CycleState.Active) {
       let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
 
-      if((sortedProcesses.length > 0 && !activeProcess) || activeProcess?.state === ProcessState.Finished){
+      if(
+        (!activeCycle.isPreemptive && (sortedProcesses.length > 0 && !activeProcess) || (activeProcess?.state === ProcessState.Finished))
+        || activeCycle.isPreemptive
+      ){
         changeOrInitializeActiveProcess(
           processIndex,
           setActiveProcess,

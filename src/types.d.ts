@@ -13,8 +13,9 @@ export interface IProcess {
   createdAt?: Date;
   startTime?: number;
   arrivalTime: number;
-  hasArrived: boolean
-  arrivalDate: Date | undefined
+  hasArrived: boolean;
+  arrivalDate: Date | undefined;
+  position: number;
 }
 
 export interface ICycle {

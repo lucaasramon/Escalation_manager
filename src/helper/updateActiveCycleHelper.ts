@@ -36,7 +36,7 @@ export function UpdateActiveCycleHelper(
       }
 
       if (process.hasArrived && process.state !== ProcessState.Finished && process.isActive) {
-        if(activeProcess){
+        if(activeProcess && activeProcess.state == ProcessState.Running){
           if (activeProcess?.id === process.id) {
             if (process.cpuUsageTime >= process.runningTime) {
               return { ...process, state: ProcessState.Finished };

@@ -7,6 +7,7 @@ import {
   colors,
 } from '@/enums';
 import { generateMultipleProcesses } from '@/helper/generateMultipleProcesses';
+import { updateAllProcesses } from '@/helper/updateAllProcesses';
 import { ICycle, IProcess } from '@/types';
 import { generateUniqueNumber } from '@/utils/idGenerator';
 import { Minus, Plus } from '@phosphor-icons/react';
@@ -64,6 +65,7 @@ export default function CreateProcess({
   }
 
   const onSubmit: any = (data: IProcess, processCreationType: ProcessCreationType = ProcessCreationType.parametized) => {
+    debugger
     if(processCreationType === ProcessCreationType.parametized) {
       const newProcess: IProcess = {
         id: generateUniqueNumber(1000, 9999),
@@ -78,7 +80,8 @@ export default function CreateProcess({
         createdAt: new Date(),
         arrivalTime: data.arrivalTime,
         hasArrived: false,
-        arrivalDate: undefined
+        arrivalDate: undefined,
+        position: 0
       };
 
       if(processesQuantity > 1)  {
@@ -98,38 +101,20 @@ export default function CreateProcess({
       else{
         setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);
   
-      if (activeCycle?.status === CycleState.Active && isPreemptive) {
-        setActiveCycle((prevActiveCycle: ICycle) => ({
-          ...prevActiveCycle,
-          cycleProcesses: prevActiveCycle.cycleProcesses.map((process) => {
-            if(process.id === activeProcess?.id) {
-              return {
-                ...process, state: ProcessState.Ready
-              }
-            }
-            return process
-          }).concat(newProcess),
-        }));
+        if (activeCycle?.status === CycleState.Active && isPreemptive) {
+          setActiveCycle((prevActiveCycle: ICycle) => ({
+            ...prevActiveCycle,
+            cycleProcesses: prevActiveCycle.cycleProcesses.concat(newProcess),
+          }));
 
-        setCycles((prevCycles: ICycle[]) =>
-          prevCycles.map((cycle) => {
-            if (cycle.id === activeCycle.id) {
-              return {
-                ...cycle,
-                cycleProcesses: [...cycle.cycleProcesses.map((process) => {
-                  if(process.id === activeProcess?.id) {
-                    return {
-                      ...process, state: ProcessState.Ready
-                    }
-                  }
-                  return process
-                }), newProcess],
-              };
-            }
-            return cycle;
-          })
-        );
-      }
+          const concatedProcesses = activeCycle.cycleProcesses.concat(newProcess)
+          setActiveCycle((prevActiveCycle: ICycle) => ({
+            ...prevActiveCycle,
+            cycleProcesses: concatedProcesses
+          }));
+
+          updateAllProcesses(activeCycle, setCycles, setProcesses)
+        }
       }
     }
     
