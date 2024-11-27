@@ -8,20 +8,23 @@ export function UpdateActiveCycleHelper(
   setActiveCycle: Dispatch<SetStateAction<ICycle | null>>,
   activeCycle: ICycle,
   activeProcess: IProcess | null,
-  setActiveProcess: Dispatch<SetStateAction<IProcess | null>>
+  setActiveProcess: Dispatch<SetStateAction<IProcess | null>>,
+  quantum?: number
 ) {
   function updateActiveCycle(
-    cycleState: CycleState, 
+    cycleState: CycleState,
     updatedProcesses: IProcess[]
-  ){
-    setActiveCycle((prevCycle) => (
-      prevCycle ? {
-        ...prevCycle,
-        duration: prevCycle.duration + 1,
-        cycleProcesses: updatedProcesses,
-        status: cycleState,
-      } : null
-    ));
+  ) {
+    setActiveCycle((prevCycle) =>
+      prevCycle
+        ? {
+            ...prevCycle,
+            duration: prevCycle.duration + 1,
+            cycleProcesses: updatedProcesses,
+            status: cycleState,
+          }
+        : null
+    );
   }
 
   if (activeCycle) {
@@ -36,25 +39,58 @@ export function UpdateActiveCycleHelper(
       }
 
       if (process.hasArrived && process.state !== ProcessState.Finished && process.isActive) {
-        if(activeProcess && activeProcess.state == ProcessState.Running){
+        if (activeProcess && activeProcess.state == ProcessState.Running) {
           if (activeProcess?.id === process.id) {
-            if (process.cpuUsageTime >= process.runningTime) {
-              return { ...process, state: ProcessState.Finished };
+            if (quantum) {
+              // Verifica se o próximo quantum já foi definido para o processo
+              if (!process.nextQuantumTime) {
+                process.nextQuantumTime = process.cpuUsageTime + quantum;
+              }
+                        
+              // Verifica se o cpuUsageTime atingiu o próximo quantum
+              if (process.cpuUsageTime >= process.nextQuantumTime) {
+            
+                // Atualiza o próximo quantum se o processo ainda não terminou
+                if (process.cpuUsageTime >= process.runningTime) {
+                  return { ...process, state: ProcessState.Finished, nextQuantumTime: undefined };
+                } else {
+                  process.nextQuantumTime = process.cpuUsageTime + quantum;
+                  process.state = ProcessState.roundRobin 
+                  return { ...process};
+                }
+              } else {
+                // Incrementa o tempo de uso de CPU
+                return { ...process, cpuUsageTime: process.cpuUsageTime + 1 };
+              }
             } else {
-              return { ...process, cpuUsageTime: process.cpuUsageTime + 1 };
+
+              if (process.cpuUsageTime >= process.runningTime) {
+
+                return { ...process, state: ProcessState.Finished };
+              } else {
+                return { ...process, cpuUsageTime: process.cpuUsageTime + 1 };
+              }
             }
           } else {
             return { ...process, waitingTime: process.waitingTime + 1 };
           }
-        }else{
-          return process;
+        } else {
+          return {
+            ...process, state: ProcessState.Ready
+          };
         }
-      } else if(!process.isActive){
+      } else if (!process.isActive) {
+        console.log("3######")
         return {
           ...process, state: ProcessState.Waiting
-        }
-      }else{
-        return process;
+        };
+      } else if (process.isActive && process.state == ProcessState.Waiting) {
+        console.log("4######")
+        return {
+          ...process, state: ProcessState.Ready
+        };
+      } else {
+        return process
       }
     });
 
@@ -64,13 +100,13 @@ export function UpdateActiveCycleHelper(
     let cycleState = CycleState.Active;
     if (shouldFinishCycle) {
       cycleState = CycleState.Finished;
-      updateActiveCycle(cycleState, updatedProcesses)
+      updateActiveCycle(cycleState, updatedProcesses);
       setActiveProcess(null);
-      if(activeCycle.status === CycleState.Finished){
-        setActiveCycle(null)
+      if (activeCycle.status === CycleState.Finished) {
+        setActiveCycle(null);
       }
     } else {
-      updateActiveCycle(cycleState, updatedProcesses)
+      updateActiveCycle(cycleState, updatedProcesses);
     }
   }
 }

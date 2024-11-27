@@ -61,7 +61,8 @@ export default function Process() {
           setActiveCycle,
           activeCycle,
           activeProcess,
-          setActiveProcess
+          setActiveProcess,
+          quantum ? quantum : undefined
         );
 
         //atualiza o processo ativo
@@ -86,9 +87,8 @@ export default function Process() {
   useEffect(() => {
     if (activeCycle?.status === CycleState.Active) {
       let sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle)
-
       if(
-        (!activeCycle.isPreemptive && (sortedProcesses.length > 0 && !activeProcess) || (activeProcess?.state === ProcessState.Finished))
+        (!activeCycle.isPreemptive && (sortedProcesses.length > 0 && !activeProcess) || (activeProcess?.state === ProcessState.Finished) || (activeProcess?.state === ProcessState.Waiting))
         || activeCycle.isPreemptive
       ){
         changeOrInitializeActiveProcess(

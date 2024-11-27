@@ -19,7 +19,7 @@ export const generateMultipleProcesses = (
     for (let index = 0; index < processesQuantity; index++) {
       const newProcess: IProcess = {
         id: generateUniqueNumber(1000, 9999),
-        priority: processBase?.priority ? processBase?.priority : Math.floor(Math.random()  * (15 - 1) + 1),
+        priority: processBase?.priority ? processBase?.priority : Math.floor(Math.random() * (15 - 1) + 1),
         color: processBase?.color ? processBase?.color : getRandomColor(),
         type: processBase?.type ? processBase?.type : Math.random() < 0.5 ? ProcessType.CpuBound : ProcessType.IOBound,
         runningTime: processBase?.runningTime ? processBase?.runningTime : Math.floor(Math.random() * (20 - 5) + 5),
@@ -32,6 +32,7 @@ export const generateMultipleProcesses = (
         hasArrived: false,
         arrivalDate: new Date(),
         startTime: Math.floor(Math.random() * 10),
+        position: 0
       };
 
       setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);

@@ -46,7 +46,7 @@ export default function ActionButtons({}: Props) {
           isActive: true,
           state: ProcessState.Ready,
         }));
-    
+
         setProcesses(newProcesses);
     
         const newCycle: ICycle = {

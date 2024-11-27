@@ -7,10 +7,12 @@ export const updateActiveProcessHelper = (
 ) => {
   setActiveProcess((prevProcess: IProcess | null) => {
     if (prevProcess?.state === ProcessState.Finished || !prevProcess?.isActive) {
+
       return prevProcess;
     }
 
     if (prevProcess.cpuUsageTime >= prevProcess.runningTime) {
+
       return { ...prevProcess, state: ProcessState.Finished };
 
     } else {

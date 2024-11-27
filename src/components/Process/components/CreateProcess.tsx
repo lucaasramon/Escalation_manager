@@ -2,6 +2,7 @@
 import { useProcessesContext } from '@/context/context';
 import {
   CycleState,
+  PreemptiveEscalationAlgorithm,
   ProcessState,
   ProcessType,
   colors,
@@ -42,7 +43,11 @@ export default function CreateProcess({
     setActiveCycle, 
     setCycles, 
     isPreemptive, 
-    activeProcess
+    activeProcess,
+    currentAlgorithm,
+    setActiveProcess,
+    processIndex,
+    setProcessIndex
   } = useProcessesContext();
 
   const [tab, setTab] = useState<number>(1)
@@ -65,7 +70,6 @@ export default function CreateProcess({
   }
 
   const onSubmit: any = (data: IProcess, processCreationType: ProcessCreationType = ProcessCreationType.parametized) => {
-    debugger
     if(processCreationType === ProcessCreationType.parametized) {
       const newProcess: IProcess = {
         id: generateUniqueNumber(1000, 9999),
@@ -76,7 +80,7 @@ export default function CreateProcess({
         cpuUsageTime: 0,
         waitingTime: 0,
         state: ProcessState.Ready,
-        isActive: false,
+        isActive: true,
         createdAt: new Date(),
         arrivalTime: data.arrivalTime,
         hasArrived: false,
@@ -100,8 +104,7 @@ export default function CreateProcess({
 
       else{
         setProcesses((prevProcesses: IProcess[]) => [...prevProcesses, newProcess]);
-  
-        if (activeCycle?.status === CycleState.Active && isPreemptive) {
+        if (activeCycle?.status === CycleState.Active) {
           setActiveCycle((prevActiveCycle: ICycle) => ({
             ...prevActiveCycle,
             cycleProcesses: prevActiveCycle.cycleProcesses.concat(newProcess),
@@ -112,8 +115,9 @@ export default function CreateProcess({
             ...prevActiveCycle,
             cycleProcesses: concatedProcesses
           }));
-
-          updateAllProcesses(activeCycle, setCycles, setProcesses)
+            activeCycle.cycleProcesses = concatedProcesses
+            updateAllProcesses(activeCycle, setCycles, setProcesses, activeProcess, currentAlgorithm, setActiveProcess, processIndex, setProcessIndex, true)
+          
         }
       }
     }

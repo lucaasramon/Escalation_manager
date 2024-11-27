@@ -2,7 +2,7 @@ import { useProcessesContext } from '@/context/context';
 import { PreemptiveEscalationAlgorithm, ProcessState } from '@/enums';
 import { ICycle, IProcess } from '@/types';
 import { PlayPause, XCircle } from '@phosphor-icons/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CycleState } from '@/enums';
 import ProcessArrival from './ProcessArrival';
 import { updateAllProcesses } from '@/helper/updateAllProcesses';
@@ -12,7 +12,7 @@ type ProcessTableProps = {
 };
 
 export default function ProcessTable({ quantum }: ProcessTableProps) {
-  const { activeProcess, currentAlgorithm, processes, setProcesses, activeCycle, setCycles, setActiveCycle, setActiveProcess} =
+  const { activeProcess, currentAlgorithm, processes, setProcesses, activeCycle, setCycles, setActiveCycle, setActiveProcess, isPreemptive} =
     useProcessesContext();
 
   const handleDeleteProcess = (id: number) => {
@@ -22,27 +22,42 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
   }
   const toggleProcessActive = (id: number) => {
     setActiveCycle((prevCycle: ICycle) => {
+      if (!prevCycle) return null;
+  
       const updatedProcesses = prevCycle.cycleProcesses.map((process: IProcess) => {
-        if(process.id === id){
+        const pause = !process.isActive;
+  
+        if (process.id === id) {
+          // Atualiza o processo correspondente ao ID passado
           return {
-            ...process, isActive: !process.isActive
-          }
-        }else{
-          return process
+            ...process,
+            isActive: pause,
+            state: pause ? ProcessState.Ready : ProcessState.Waiting,
+          };
+        } else if (process.state === "Em execução" && process.id !== id && currentAlgorithm == PreemptiveEscalationAlgorithm.RR && isPreemptive) {
+          // Atualiza o processo com state "Em execução" e id diferente
+          return {
+            ...process,
+            state: ProcessState.Ready,
+          };
+        } else {
+          return process;
         }
-      })
-      return prevCycle ? {
+      });
+  
+      return {
         ...prevCycle,
         cycleProcesses: updatedProcesses,
-      } : null;
-    })
-
-    updateAllProcesses(activeCycle, setCycles ,setProcesses)
-
-    if(id === activeProcess?.id){
-      setActiveProcess(null)
+      };
+    });
+  
+    updateAllProcesses(activeCycle, setCycles, setProcesses);
+  
+    if (id === activeProcess?.id) {
+      setActiveProcess(null);
     }
-  }
+  };
+  
 
   return (
     <div className="overflow-x-auto mt-24">
@@ -95,7 +110,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 {quantum && currentAlgorithm === PreemptiveEscalationAlgorithm.RR ? (
                   <td>{quantum}</td>
                 ): null}
-                 <td>{process?.runningTime - process?.cpuUsageTime} seg(s)</td>
+                <td>{process?.runningTime - process?.cpuUsageTime} seg(s)</td>
                 <td>{process?.runningTime} seg(s)</td>
                 <td>{process?.cpuUsageTime} seg(s)</td>
                 <td>{process?.waitingTime} seg(s)</td>

@@ -4,15 +4,16 @@ export enum ProcessType {
 }
 
 export enum ProcessState {
-  Ready = 'pronto',
-  Running = 'executando',
+  Ready = 'Aguardando',
+  Running = 'Em execução',
   Waiting = 'esperando',
-  Finished = 'finalizado',
+  Finished = 'Concluído',
+  roundRobin = 'roundRobin'
 }
 
 export enum CycleState {
   Active = 'ativo',
-  Finished = 'finalizado',
+  Finished = 'Concluído',
 }
 
 export enum PreemptiveEscalationAlgorithm {

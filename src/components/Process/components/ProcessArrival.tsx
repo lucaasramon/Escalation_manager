@@ -14,17 +14,27 @@ export default function ProcessArrival({ process }: Props) {
             process?.state === ProcessState.Ready
               ? 'text-blue-500'
               : process?.state === ProcessState.Running
-              ? 'text-green-500'
+              ? 'text-yellow-500'
               : process?.state === ProcessState.Finished
-              ? 'text-red-500'
+              ? 'text-green-500'
+              : process?.state === ProcessState.Waiting
+              ? 'text-gray-500' 
+              : process?.state === ProcessState.roundRobin
+              ? 'loading loading-spinner text-primary'
               : 'text-gray-500'
           }`}
         >
           {process.state}
         </div>
       ) : (
-        <div>
-          <span className="loading loading-spinner text-primary"></span>
+        <div
+        className={`${
+          process?.state === ProcessState.Ready
+            ? 'text-blue-500'
+            : 'text-gray-500'
+        }`}>
+          {process.state ? process.state: <span className="loading loading-spinner text-primary"></span>}
+          
         </div>  
       )}
     </>

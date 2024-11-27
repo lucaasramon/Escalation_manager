@@ -1,6 +1,7 @@
 import { ProcessState, ProcessTypem, CycleState } from './enums';
 
 export interface IProcess {
+  nextQuantumTime?: any;
   id: number;
   priority: number;
   color: string;
@@ -16,6 +17,7 @@ export interface IProcess {
   hasArrived: boolean;
   arrivalDate: Date | undefined;
   position: number;
+  elapsedTime?: number;
 }
 
 export interface ICycle {

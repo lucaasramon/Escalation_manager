@@ -4,6 +4,7 @@ import { sortByFifo } from "./SortProcessses/sortByFifo";
 import { sortBySjf } from "./SortProcessses/sortBySjf";
 import { sortByPriority } from "./SortProcessses/sortByPriority";
 import { Dispatch, SetStateAction } from "react";
+import { sortByRoundRobin } from "./SortProcessses/sortByRoundRobin";
 
 export const sortProcessesHelper = (
     currentAlgorithm: NonPreemptiveEscalationAlgorithm | PreemptiveEscalationAlgorithm, 
@@ -19,13 +20,14 @@ export const sortProcessesHelper = (
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.Priority) {
         sortedProcesses = sortByPriority(activeCycle?.cycleProcesses);
         sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
+
     } else if (currentAlgorithm === PreemptiveEscalationAlgorithm.RR) {
-        sortedProcesses = sortByFifo(activeCycle?.cycleProcesses);
-        sortedProcesses = sortedProcesses.filter((process) => process.state !== ProcessState.Finished)
+        sortedProcesses = sortByRoundRobin(activeCycle?.cycleProcesses);
     }
 
     sortedProcesses.forEach((process, index) => {
         process.position = index+1
     })
+
     return sortedProcesses
 }

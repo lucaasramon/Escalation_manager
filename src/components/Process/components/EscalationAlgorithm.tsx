@@ -38,6 +38,17 @@ export default function SelectEscalationAlgorithm() {
     setCurrentAlgorithm(undefined);
   }, [isPreemptive]);
 
+  const handleReady = () => {
+    if(currentAlgorithm === PreemptiveEscalationAlgorithm.RR && isPreemptive){
+      if(quantum > 0) {
+        setShowModal(false)
+      }else {
+        alert("O valor do quantum deve ser maior que zero!");
+      }
+    }else {
+      setShowModal(false)
+    }
+  }
   return (
  
   <div>
@@ -111,7 +122,7 @@ export default function SelectEscalationAlgorithm() {
              <Quantum setQuantum={setQuantum} quantum={quantum} />
            )}
          </div>
-         <button onClick={() => setShowModal(false)} className='btn btn-primary text-white font-bold'>Pronto</button>
+         <button onClick={() => handleReady() } className='btn btn-primary text-white font-bold'>Pronto</button>
        </div>
      </dialog>
     )}
