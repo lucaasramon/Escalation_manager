@@ -15,11 +15,14 @@ export const changeOrInitializeActiveProcess = (
     setProcessIndex(0);
     return;
   }
-
   const currentProcess = sortedProcesses[processIndex];
 
   if (currentProcess) {
-
+    sortedProcesses.map((index) => {
+      if(index.id !== currentProcess.id){
+        index.state = ProcessState.Ready
+      }
+    })
     // Verifica se o processo deve ser finalizado
     if (currentProcess.cpuUsageTime >= currentProcess.runningTime) {
       currentProcess.state = ProcessState.Finished;

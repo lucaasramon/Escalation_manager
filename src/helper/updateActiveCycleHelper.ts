@@ -80,12 +80,10 @@ export function UpdateActiveCycleHelper(
           };
         }
       } else if (!process.isActive) {
-        console.log("3######")
         return {
           ...process, state: ProcessState.Waiting
         };
       } else if (process.isActive && process.state == ProcessState.Waiting) {
-        console.log("4######")
         return {
           ...process, state: ProcessState.Ready
         };

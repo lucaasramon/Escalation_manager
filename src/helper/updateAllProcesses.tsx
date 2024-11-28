@@ -36,10 +36,8 @@ export const updateAllProcesses = (
 
     setProcesses(activeCycle.cycleProcesses)
     if (activeCycle?.status === CycleState.Active && activeUpdate) {
-      console.log("2@@", activeCycle)
       if (currentAlgorithm) {
         const sortedProcesses = sortProcessesHelper(currentAlgorithm, activeCycle);
-        console.log("3@@", sortedProcesses)
 
         if (
           (!activeCycle.isPreemptive &&
