@@ -72,7 +72,7 @@ export default function ActionButtons({}: Props) {
             disabled={processes.length === 0 || !currentAlgorithm}
         >
             <Play size={28} /> 
-            <span className='hidden md:block'>Iniciar</span>
+            <h1 className='hidden md:block'>Iniciar</h1>
         </button>
 
         <button
@@ -81,7 +81,7 @@ export default function ActionButtons({}: Props) {
             disabled={processes.length === 0 || !!activeProcess}
         >
             <Broom size={28} />
-            <span className='hidden md:block'>Limpar</span>
+            <h1 className='hidden md:block'>Limpar</h1>
         </button>
 
         {cycles && (
@@ -91,7 +91,7 @@ export default function ActionButtons({}: Props) {
             disabled={cycles.length === 0}
         >
             <Info size={28} />
-            <span className='hidden md:block'>Detalhes</span>
+            <h1 className='hidden md:block'>Detalhes</h1>
         </button>
         )}
 
@@ -101,9 +101,9 @@ export default function ActionButtons({}: Props) {
             disabled={!activeCycle || !activeProcess}
         >
             <PlayPause size={23} />
-            <span className='hidden md:block'>
+            <h1 className='hidden md:block'>
               {isCycleRunning ? "Pausar" : "Continuar"}
-            </span>
+            </h1>
         </button>
 
         {showStatistics && (

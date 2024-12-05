@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.blightgray{
+    background: rgb(30, 30, 30);
+}
+
+.bdarkgray {
+    background: #2f2f2f;
+}
+
+.closebtn {
+    position: fixed;
+    right: 25px;
+}
+
+body, html {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: rgb(56, 56, 56);
+}
+
+.modal-box{
+background: rgb(30, 30, 30);
+}
+
+* {
+    color: white;
+}
+
+.radio {
+    background: white;
+}
+
+.tab, .range {
+    color: antiquewhite;
+}
+
+.range {
+    background: gray;
+}
+
+select, input, span {
+    background: #5b5b5b !important;
+}

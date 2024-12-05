@@ -83,7 +83,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
           </thead>
           <tbody>
             {processes.map((process, index) => (
-              <tr key={process?.id ? process.id : index} className={`w-full ${process.id === activeProcess?.id && 'bg-black opacity-9 font-bold'}  `}>
+              <tr key={process?.id ? process.id : index} className={`w-full ${process.id === activeProcess?.id && 'blightgray opacity-9 font-bold'}  `}>
                 <td>
                   {process.position
                    ? process.state === ProcessState.Finished ? "-" : `${process.position}º` : "-"}
@@ -91,18 +91,18 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
                 <td>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span
+                      <h1
                         style={{ backgroundColor: process?.color }}
                         className={`rounded-full h-2 w-2 inline-block ${
                           activeProcess?.id === process?.id && 'animate-ping '
                         }`}
                       />
-                      <span> {process?.id}</span>
+                      <h1> {process?.id}</h1>
                     </div>
                     <div>
-                      <span className="text-gray-500 text-xs">
+                      <h1 className="text-gray-500 text-xs">
                         {process?.type}
-                      </span>
+                      </h1>
                     </div>
                   </div>
                 </td>
@@ -134,7 +134,7 @@ export default function ProcessTable({ quantum }: ProcessTableProps) {
           </tbody>
         </table>
       ) : (
-        <p className='text-lg text-center'>Sem processos ainda... 🙁</p>
+        <p className='text-lg text-center'>Sem processos</p>
       )}
     </div>
   );

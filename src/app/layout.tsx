@@ -8,7 +8,7 @@ import { ContextProvider } from '@/context/context';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SO Helper',
+  title: 'Gerencimento de escalonamento',
   description: 'Application to help the understanding of S.O by simulation',
 };
 

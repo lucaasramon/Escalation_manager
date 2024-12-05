@@ -62,10 +62,10 @@ export default function SelectEscalationAlgorithm() {
              
              <div className='flex justify-between'>
                <h1 className='text-green-500 font-bold mb-2 text-xl'>Configuração</h1>
-               <X weight='bold' color='white' className='cursor-pointer' size={25} onClick={()=> setShowModal(false)}></X>
+               <X weight='bold' color='white' className='closebtn cursor-pointer' size={25} onClick={()=> setShowModal(false)}></X>
              </div>
  
-             <span className='font-bold underline'>Tipo de sistema</span>
+             <h1 className='font-bold underline'>Tipo de sistema</h1>
              <div className="flex gap-2 items-center">
                <input
                  {...register('cycleType')}
@@ -88,7 +88,7 @@ export default function SelectEscalationAlgorithm() {
                <label>Preemptivo</label>
              </div>
              
-             <span className='font-bold underline'>Algoritmo de escalonamento</span>
+             <h1 className='font-bold underline'>Algoritmo de escalonamento</h1>
               <select
                 disabled={!!activeProcess}
                 value={selectedAlgorithm}
